@@ -3,10 +3,12 @@ import type { GameCategory } from "@/types";
 
 export default function GameSection({ category }: { category: GameCategory }) {
   return (
-    <section id={category.id} className="pt-14">
-      <h3 className="text-xl font-semibold tracking-tight">{category.title}</h3>
-      <p className="mt-1 text-sm text-mute">{category.blurb}</p>
-      <ul className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3">
+    <section id={category.id} aria-labelledby={`${category.id}-title`} className="mt-12">
+      <h3 id={`${category.id}-title`} className="font-medium">
+        {category.title}
+      </h3>
+      <p className="label">{category.blurb}</p>
+      <ul className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
         {category.games.map((g) => (
           <GameCard key={g.name} game={g} />
         ))}

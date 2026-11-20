@@ -1,31 +1,138 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+/* ─── Design tokens ───────────────────────────────────────────────────────────
+   Light: warm paper, ink-black type, a vermilion "ink seal" accent and a soft
+   moon-gold for decorative shapes. Dark is a separate warm charcoal palette —
+   not an inversion.                                                          */
 @theme {
-  --color-paper: #f6f7f9;
---color-card: #ffffff;
-  --color-ink: #121826;
-  --color-mute: #5b6475;
-  --color-line: #e1e4ea;
-  --color-accent: #2457f5;
+  --color-paper: #f3efe7;
+  --color-paper-2: #ebe5d9;
+  --color-card: #faf8f3;
+  --color-ink: #1c1915;
+  --color-mute: #6b6357;
+  --color-faint: #a59d8f;
+  --color-line: #ddd5c6;
+  --color-accent: #b8391b;
+  --color-accent-soft: #f1d9cc;
+  --color-moon: #e2b75a;
+  --color-moon-soft: #f3e3bd;
+
   --font-sans: var(--font-body), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-serif), ui-serif, Georgia, serif;
+  --font-mono: var(--font-code), ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --ease-out-expo: cubic-bezier(0.22, 1, 0.36, 1);
+
+  --animate-spin-slow: spin 28s linear infinite;
+  --animate-marquee: marquee 40s linear infinite;
 }
 
-:root { color-scheme: light; }
+:root {
+  color-scheme: light;
+  --grain-opacity: 0.045;
+}
 
+/* Dark: deep navy surfaces with a clear blue accent. */
 :root[data-theme="dark"] {
   color-scheme: dark;
-  --color-paper: #11141c;
-  --color-card: #1b2030;
-  --color-ink: #e7eaf2;
-  --color-mute: #9ba3b8;
-  --color-line: #2a3042;
-  --color-accent: #8ea6ff;
+  --color-paper: #0b1120;
+  --color-paper-2: #0f172a;
+  --color-card: #131c31;
+  --color-ink: #e6ebf5;
+  --color-mute: #9aa6bf;
+  --color-faint: #4f5b78;
+  --color-line: #1f2a44;
+  --color-accent: #6ea0ff;
+  --color-accent-soft: #16254a;
+  --color-moon: #8bb1ff;
+  --color-moon-soft: #142449;
+  --grain-opacity: 0.035;
 }
 
-body {
-  background: var(--color-paper);
-  color: var(--color-ink);
-  transition: background-color 0.2s, color 0.2s;
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
 }
-:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; }
-@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+
+/* ─── Base ──────────────────────────────────────────────────────────────── */
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+    /* Decorative layers bleed past the edges on purpose; never let them widen the page. */
+    overflow-x: clip;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    html { scroll-behavior: smooth; }
+  }
+  body {
+    background: var(--color-paper);
+    color: var(--color-ink);
+    transition: background-color 0.35s ease, color 0.35s ease;
+    overflow-x: clip;
+  }
+  ::selection {
+    background: var(--color-accent);
+    color: var(--color-paper);
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+  [id] { scroll-margin-top: 5.5rem; }
+}
+
+/* Subtle paper grain over everything (static, GPU-cheap). */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+  opacity: var(--grain-opacity);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ─── Utilities ─────────────────────────────────────────────────────────── */
+@utility shell {
+  width: 100%;
+  max-width: 1240px;
+  margin-inline: auto;
+  padding-inline: 1rem;
+  @media (width >= 40rem) { padding-inline: 1.5rem; }
+  @media (width >= 64rem) { padding-inline: 2.5rem; }
+}
+
+/* Small secondary text: plain, sentence case. */
+@utility label {
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  color: var(--color-mute);
+}
+
+@utility hatch {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    color-mix(in oklab, var(--color-line) 70%, transparent) 0 1px,
+    transparent 1px 10px
+  );
+}
+
+@utility dot-grid {
+  background-image: radial-gradient(color-mix(in oklab, var(--color-ink) 14%, transparent) 1px, transparent 1px);
+  background-size: 18px 18px;
+}
+
+@utility text-balance { text-wrap: balance; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
