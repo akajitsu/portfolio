@@ -49,7 +49,7 @@ export default function ProjectPreview({ project, className, showPhone = true, p
               />
             ) : (
               <div className="hatch absolute inset-0 flex items-center justify-center" aria-hidden="true">
-                <span className="font-display text-4xl text-ink/30">{project.name}</span>
+                <span className="font-display text-4xl font-semibold tracking-[-0.025em] text-ink/30">{project.name}</span>
               </div>
             )}
           </div>

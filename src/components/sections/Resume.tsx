@@ -83,7 +83,7 @@ export default function Resume() {
           ) : (
             <div className="flex aspect-[4/3] flex-col items-center justify-center rounded-xl border border-dashed border-line text-center sm:aspect-[16/9]">
               <FileText size={28} className="text-mute" />
-              <p className="mt-3 font-display text-2xl">Resume coming soon</p>
+              <p className="mt-3 font-display text-2xl font-medium tracking-[-0.015em]">Resume coming soon</p>
             </div>
           )}
         </FadeIn>

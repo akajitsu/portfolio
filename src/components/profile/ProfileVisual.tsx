@@ -107,7 +107,7 @@ function PortraitPlaceholder({ initial, label }: { initial: string; label: strin
         <circle cx="100" cy="92" r="44" fill="currentColor" />
         <path d="M18 250c0-50 36-88 82-88s82 38 82 88z" fill="currentColor" />
       </svg>
-      <span className="absolute left-6 top-4 font-display text-[6.5rem] leading-none text-ink/80">{initial}</span>
+      <span className="absolute left-6 top-4 font-display text-[6.5rem] font-semibold leading-none tracking-[-0.04em] text-ink/80">{initial}</span>
       <span className="label absolute bottom-5 left-6">Photo coming soon</span>
     </div>
   );

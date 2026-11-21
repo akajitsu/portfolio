@@ -1,17 +1,17 @@
 import type { Metadata, Viewport } from "next";
-import { Bricolage_Grotesque, Instrument_Serif, JetBrains_Mono } from "next/font/google";
+import { IBM_Plex_Sans, JetBrains_Mono } from "next/font/google";
 import Providers from "@/components/Providers";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { profile } from "@/data/profile";
 import "./globals.css";
 
-const body = Bricolage_Grotesque({ subsets: ["latin"], variable: "--font-body", display: "swap" });
-const serif = Instrument_Serif({
+// IBM Plex Sans: 400 body · 500 nav, buttons, small headings · 600 section headings and titles.
+const plex = IBM_Plex_Sans({
   subsets: ["latin"],
-  weight: "400",
+  weight: ["400", "500", "600"],
   style: ["normal", "italic"],
-  variable: "--font-serif",
+  variable: "--font-plex",
   display: "swap",
 });
 const mono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-code", display: "swap" });
@@ -54,7 +54,7 @@ const themeScript = `try{var t=localStorage.getItem("theme");if(t!=="light"&&t!=
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning className={`${body.variable} ${serif.variable} ${mono.variable}`}>
+    <html lang="en" suppressHydrationWarning className={`${plex.variable} ${mono.variable}`}>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>

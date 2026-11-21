@@ -21,7 +21,7 @@ export default function Projects() {
       {rest.length > 0 && (
         <div className="mt-24">
           <FadeIn>
-            <h3 className="font-display text-3xl">Up next</h3>
+            <h3 className="font-display text-3xl font-semibold tracking-[-0.02em]">Up next</h3>
           </FadeIn>
           <ul className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {rest.map((p, i) => (

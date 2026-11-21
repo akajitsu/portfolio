@@ -19,7 +19,7 @@ export default function Hero() {
         <div className="lg:col-span-7">
           <RevealLines
             delay={0.05}
-            className="font-display text-[clamp(2.9rem,6.2vw,5.6rem)] leading-[0.98] tracking-[-0.02em]"
+            className="font-display text-[clamp(2.25rem,5vw,4.25rem)] font-semibold leading-[1.04] tracking-[-0.03em]"
             lines={[profile.greeting, ...profile.headline]}
             lineClassNames={[undefined, "text-mute", "text-mute"]}
           />

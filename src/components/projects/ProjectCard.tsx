@@ -71,7 +71,7 @@ export function FeaturedProject({ project }: { project: Project }) {
             <span className="label">{project.category}</span>
             {project.year && <span className="label">{project.year}</span>}
           </div>
-          <h3 className="mt-3 font-display text-[clamp(2.6rem,5vw,4rem)] leading-none tracking-[-0.015em]">
+          <h3 className="mt-3 font-display text-[clamp(2.1rem,4.2vw,3.25rem)] font-semibold leading-none tracking-[-0.03em]">
             <Link href={`/projects/${project.slug}`} className="transition-colors duration-300 hover:text-accent">
               {project.name}
             </Link>
@@ -127,7 +127,7 @@ export function ProjectCard({ project }: { project: Project }) {
           <span className="label">{project.category}</span>
           <StatusChip status={project.status} />
         </div>
-        <h3 className="mt-2 font-display text-3xl">
+        <h3 className="mt-2 font-display text-3xl font-semibold tracking-[-0.02em]">
           <Link href={`/projects/${project.slug}`} className="after:absolute after:inset-0">
             {project.name}
           </Link>

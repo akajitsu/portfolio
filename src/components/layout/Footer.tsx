@@ -11,7 +11,7 @@ export default function Footer() {
     <footer className="border-t border-line">
       <div className="shell grid gap-12 py-16 md:grid-cols-12">
         <div className="md:col-span-5">
-          <p className="font-display text-5xl leading-none">
+          <p className="font-display text-5xl font-semibold leading-none tracking-[-0.03em]">
             {profile.shortName}
             <span className="text-accent">.</span>
           </p>

@@ -23,7 +23,7 @@ export default function Contact() {
               <p className="label">Email</p>
               <a
                 href={`mailto:${profile.email}`}
-                className="group mt-1 inline-flex max-w-full items-center gap-2 break-all font-display text-[clamp(1.6rem,3.2vw,2.5rem)] leading-tight transition-colors hover:text-accent"
+                className="group mt-1 inline-flex max-w-full items-center gap-2 break-all font-display text-[clamp(1.35rem,2.7vw,2.1rem)] font-medium leading-tight tracking-[-0.02em] transition-colors hover:text-accent"
               >
                 {profile.email}
                 <ArrowUpRight size={24} className="shrink-0 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />

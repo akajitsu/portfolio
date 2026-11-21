@@ -7,7 +7,7 @@ export default function CertificateCard({ certificate }: { certificate: Certific
     <>
       <ImageSlot src={certificate.image} alt={certificate.title} ratio="aspect-[4/3]" />
       <div className="mt-4 flex items-baseline justify-between gap-4 px-1">
-        <h2 className="font-display text-2xl leading-tight">{certificate.title}</h2>
+        <h2 className="font-display text-2xl font-semibold leading-tight tracking-[-0.015em]">{certificate.title}</h2>
         <span className="shrink-0 font-mono text-xs text-mute">{certificate.year}</span>
       </div>
       <p className="mt-1 px-1 text-sm text-mute">{certificate.issuer}</p>

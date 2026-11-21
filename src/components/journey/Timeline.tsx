@@ -47,7 +47,7 @@ export default function Timeline({ entries }: { entries: TimelineEntry[] }) {
             {e.period && <> · {e.period}</>}
             {e.current && <span className="text-accent"> · Current</span>}
           </p>
-          <h3 className={cn("mt-1 font-display text-[clamp(1.6rem,2.6vw,2.1rem)] leading-tight", e.placeholder && "text-mute")}>
+          <h3 className={cn("mt-1 font-display text-[clamp(1.4rem,2.2vw,1.8rem)] font-semibold leading-tight tracking-[-0.02em]", e.placeholder && "text-mute")}>
             {e.title}
           </h3>
           {e.org && <p className="mt-0.5">{e.org}</p>}

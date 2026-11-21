@@ -19,8 +19,9 @@
   --color-moon: #e2b75a;
   --color-moon-soft: #f3e3bd;
 
-  --font-sans: var(--font-body), ui-sans-serif, system-ui, sans-serif;
-  --font-display: var(--font-serif), ui-serif, Georgia, serif;
+  /* IBM Plex Sans everywhere. `font-display` marks headings/titles (same family; weight set per element). */
+  --font-sans: var(--font-plex), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-plex), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-code), ui-monospace, SFMono-Regular, Menlo, monospace;
 
   --ease-out-expo: cubic-bezier(0.22, 1, 0.36, 1);

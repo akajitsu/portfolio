@@ -14,7 +14,7 @@ export default function About() {
         {/* Intro + quick facts */}
         <div className="lg:col-span-5">
           <FadeIn>
-            <p className="font-display text-[clamp(1.75rem,3vw,2.4rem)] leading-[1.15]">{profile.aboutLead}</p>
+            <p className="font-display text-[clamp(1.5rem,2.6vw,2.05rem)] leading-[1.25] tracking-[-0.015em]">{profile.aboutLead}</p>
             <p className="mt-5 max-w-md leading-relaxed text-mute">{profile.about}</p>
           </FadeIn>
 
@@ -52,7 +52,7 @@ export default function About() {
       {/* Games */}
       <div className="mt-20">
         <FadeIn className="flex items-baseline justify-between gap-4 border-t border-line pt-6">
-          <h3 className="font-display text-3xl">Games I love</h3>
+          <h3 className="font-display text-3xl font-semibold tracking-[-0.02em]">Games I love</h3>
           <Link href="/about" className="group flex items-center gap-1.5 text-sm text-mute transition-colors hover:text-ink">
             Full list
             <ArrowRight size={14} className="transition-transform duration-300 group-hover:translate-x-0.5" />

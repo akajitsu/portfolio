@@ -12,11 +12,11 @@ export default function AboutPage() {
     <div className="shell pb-24 pt-32">
       <SectionHeading level="h1" title="About me" />
       <FadeIn className="mt-10 max-w-2xl">
-        <p className="font-display text-[clamp(1.75rem,3vw,2.4rem)] leading-[1.15]">{profile.aboutLead}</p>
+        <p className="font-display text-[clamp(1.5rem,2.6vw,2.05rem)] leading-[1.25] tracking-[-0.015em]">{profile.aboutLead}</p>
         <p className="mt-5 text-lg leading-relaxed text-mute">{profile.about}</p>
       </FadeIn>
 
-      <h2 className="mt-24 border-t border-line pt-8 font-display text-[clamp(2.2rem,4vw,3rem)] leading-none">Games I love</h2>
+      <h2 className="mt-24 border-t border-line pt-8 font-display text-[clamp(1.9rem,3.4vw,2.6rem)] font-semibold leading-none tracking-[-0.025em]">Games I love</h2>
       {gameCategories.map((c) => (
         <GameSection key={c.id} category={c} />
       ))}

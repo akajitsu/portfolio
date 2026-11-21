@@ -22,7 +22,7 @@ export default function SectionHeading({ title, description, aside, id, classNam
   return (
     <header className={cn("border-t border-line pt-8", className)}>
       <FadeIn className="flex flex-wrap items-end justify-between gap-x-8 gap-y-4">
-        <H id={id} className="font-display text-[clamp(2.4rem,5vw,3.75rem)] leading-[1] tracking-[-0.015em]">
+        <H id={id} className="font-display text-[clamp(2rem,4.2vw,3.25rem)] font-semibold leading-[1.05] tracking-[-0.025em]">
           {title}
         </H>
         {aside}

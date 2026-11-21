@@ -99,7 +99,7 @@ export default function Navbar() {
           {/* Logo */}
           <Link
             href={isHome ? "#home" : "/"}
-            className="group flex items-baseline gap-1.5 font-display text-2xl leading-none tracking-tight"
+            className="group flex items-baseline gap-1.5 font-display text-2xl font-semibold leading-none tracking-[-0.02em]"
             aria-label={`${profile.name} — home`}
           >
             <span className="relative">
@@ -127,7 +127,7 @@ export default function Navbar() {
                       href={hrefFor(item.id)}
                       aria-current={isActive ? "true" : undefined}
                       className={cn(
-                        "relative z-10 block rounded-full px-4 py-2 text-sm transition-colors duration-300",
+                        "relative z-10 block rounded-full px-4 py-2 text-sm font-medium transition-colors duration-300",
                         isActive ? "text-paper" : "text-mute hover:text-ink",
                       )}
                     >
@@ -205,7 +205,7 @@ export default function Navbar() {
                       onClick={() => setOpen(false)}
                       aria-current={isHome && active === item.id ? "true" : undefined}
                       className={cn(
-                        "block py-3 font-display text-5xl leading-tight",
+                        "block py-3 font-display text-[2.75rem] font-medium leading-tight tracking-[-0.025em]",
                         isHome && active === item.id && "text-accent",
                       )}
                     >

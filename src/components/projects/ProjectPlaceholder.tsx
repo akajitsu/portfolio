@@ -17,7 +17,7 @@ export default function ProjectPlaceholder({ project }: { project: Project }) {
           <span className="label">{project.category}</span>
           <StatusChip status={project.status} />
         </div>
-        <h3 className="mt-2 font-display text-3xl text-mute">{project.name}</h3>
+        <h3 className="mt-2 font-display text-3xl font-semibold tracking-[-0.02em] text-mute">{project.name}</h3>
         <p className="mt-2 text-sm leading-relaxed text-mute">{project.description}</p>
       </div>
     </article>

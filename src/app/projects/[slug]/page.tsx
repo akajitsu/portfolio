@@ -48,7 +48,7 @@ export default async function ProjectPage({ params }: Params) {
       <header className="mt-8 border-t border-line pt-8">
         <FadeIn trigger="mount">
           <StatusChip status={project.status} />
-          <h1 className="mt-2 font-display text-[clamp(3rem,8vw,6rem)] leading-none tracking-[-0.02em]">{project.name}</h1>
+          <h1 className="mt-2 font-display text-[clamp(2.5rem,6.5vw,5rem)] font-semibold leading-none tracking-[-0.03em]">{project.name}</h1>
         </FadeIn>
         <div className="mt-8 grid gap-10 lg:grid-cols-12">
           <FadeIn trigger="mount" delay={0.1} className="lg:col-span-7">
@@ -79,7 +79,7 @@ export default async function ProjectPage({ params }: Params) {
 
       {(project.highlights?.length || project.details?.length) && (
         <section className="mt-28 grid gap-10 border-t border-line pt-8 lg:grid-cols-12" aria-labelledby="overview-title">
-          <h2 id="overview-title" className="font-display text-3xl lg:col-span-4">
+          <h2 id="overview-title" className="font-display text-3xl font-semibold tracking-[-0.02em] lg:col-span-4">
             Overview
           </h2>
           <div className="lg:col-span-8">
@@ -104,7 +104,7 @@ export default async function ProjectPage({ params }: Params) {
 
       {project.previews && project.previews.length > 0 && (
         <section className="mt-24 border-t border-line pt-8" aria-labelledby="screens-title">
-          <h2 id="screens-title" className="font-display text-3xl">
+          <h2 id="screens-title" className="font-display text-3xl font-semibold tracking-[-0.02em]">
             Screenshots
           </h2>
           <div className="mt-8 grid gap-6 md:grid-cols-2">
@@ -124,7 +124,7 @@ export default async function ProjectPage({ params }: Params) {
         <Link href={others[0] ? `/projects/${others[0].slug}` : "/#work"} className="group flex items-end justify-between gap-6">
           <span>
             <span className="label">{others[0] ? "Next project" : "Back to"}</span>
-            <span className="mt-1 block font-display text-[clamp(2.2rem,5vw,3.75rem)] leading-none transition-colors group-hover:text-accent">
+            <span className="mt-1 block font-display text-[clamp(1.9rem,4.2vw,3.25rem)] font-semibold leading-none tracking-[-0.025em] transition-colors group-hover:text-accent">
               {others[0]?.name ?? "All projects"}
             </span>
           </span>
