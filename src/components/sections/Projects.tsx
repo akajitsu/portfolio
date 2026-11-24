@@ -1,37 +1,27 @@
-import { FeaturedProject, ProjectCard } from "@/components/projects/ProjectCard";
-import ProjectPlaceholder from "@/components/projects/ProjectPlaceholder";
-import FadeIn from "@/components/ui/FadeIn";
+import ProjectConstellation from "@/components/projects/ProjectConstellation";
 import SectionHeading from "@/components/ui/SectionHeading";
-import { projects } from "@/data/projects";
+import { realProjects } from "@/data/projects";
 
+/**
+ * Home-page projects: every project is a star in an interactive constellation.
+ * (The /projects page keeps the long-form editorial list.)
+ */
 export default function Projects() {
-  const featured = projects.filter((p) => p.featured && !p.placeholder);
-  const rest = projects.filter((p) => !(p.featured && !p.placeholder));
-
   return (
-    <section id="work" aria-labelledby="work-title" className="shell py-16 sm:py-20">
-      <SectionHeading id="work-title" title="Projects" description="Things I've built while learning web development." />
-
-      <div className="mt-14 space-y-24">
-        {featured.map((p) => (
-          <FeaturedProject key={p.slug} project={p} />
-        ))}
+    <section id="work" aria-labelledby="work-title" className="py-20 sm:py-28">
+      <div className="shell">
+        <SectionHeading
+          id="work-title"
+          index={1}
+          eyebrow="My creative universe"
+          title="My Projects"
+          description="Every project is a star in my universe."
+        />
       </div>
-
-      {rest.length > 0 && (
-        <div className="mt-24">
-          <FadeIn>
-            <h3 className="font-display text-3xl font-semibold tracking-[-0.02em]">Up next</h3>
-          </FadeIn>
-          <ul className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {rest.map((p, i) => (
-              <FadeIn as="li" key={p.slug} delay={i * 0.06} className="h-full">
-                {p.placeholder ? <ProjectPlaceholder project={p} /> : <ProjectCard project={p} />}
-              </FadeIn>
-            ))}
-          </ul>
-        </div>
-      )}
+      {/* Wider than the usual content column, so the chart and previews have room. */}
+      <div className="mx-auto mt-14 w-full max-w-[1440px] px-5 sm:mt-16 sm:px-7 lg:px-10">
+        <ProjectConstellation projects={realProjects} />
+      </div>
     </section>
   );
 }

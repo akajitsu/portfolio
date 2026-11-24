@@ -4,9 +4,9 @@ import type { Project } from "@/types";
 //  PROJECTS — the single source for the Work section, /projects and the
 //  /projects/[slug] detail pages.
 //
-//  To add a real project: copy the BeanZz entry, change the fields, and remove
-//  one of the placeholders below. Optional fields can simply be left out —
-//  missing links are never shown as buttons.
+//  To add a project: copy an entry and change the fields. Optional fields can
+//  simply be left out — missing links are never shown as buttons. The preview
+//  image links to `liveUrl` when one is set.
 //
 //  Screenshots go in /public/images/projects/ and are referenced like:
 //    thumbnail: { src: "/images/projects/my-app.webp", alt: "My App home page" }
@@ -45,31 +45,25 @@ export const projects: Project[] = [
     ],
   },
   {
-    slug: "project-02",
-    name: "Coming soon",
-    category: "In progress",
-    description: "I'm working on my next project. It'll show up here when it's ready.",
-    technologies: [],
-    status: "in-development",
-    placeholder: true,
-  },
-  {
-    slug: "project-03",
-    name: "Coming soon",
-    category: "Planned",
-    description: "Reserved for a future project.",
-    technologies: [],
-    status: "coming-soon",
-    placeholder: true,
-  },
-  {
-    slug: "project-04",
-    name: "Coming soon",
-    category: "Planned",
-    description: "Reserved for a future project.",
-    technologies: [],
-    status: "coming-soon",
-    placeholder: true,
+    slug: "memory-shelf",
+    name: "Memory Shelf",
+    category: "Web Application",
+    // From the live site's own description.
+    description:
+      "A private celestial library of photo albums. Bind your memories into books and revisit them among the stars.",
+    // Verified against the live site: Next.js on Vercel, styled with Tailwind CSS.
+    technologies: ["Next.js", "React", "Tailwind CSS", "Vercel"],
+    liveUrl: "https://memory-shelf-mocha.vercel.app",
+    thumbnail: { src: "/images/projects/memory-shelf-home.webp", alt: "Memory Shelf home page: a shelf of album books beneath an astrolabe in a night sky", width: 1440, height: 900 },
+    mobileThumbnail: { src: "/images/projects/memory-shelf-mobile.webp", alt: "Memory Shelf home page on a phone", width: 780, height: 1688 },
+    featured: true,
+    status: "live",
+    // Drawn from what the live site shows and says.
+    highlights: [
+      { title: "Albums as books", body: "Photographs are gathered into books, each one an album you can open and page through." },
+      { title: "A floating shelf", body: "Your books sit on a shelf in a quiet, animated night sky." },
+      { title: "Private library", body: "Sign in to keep your own library of albums." },
+    ],
   },
 ];
 

@@ -88,14 +88,22 @@ export type SkillCategory = {
 
 export type NavItem = { label: string; id: string };
 
-export type Game = { name: string; genre: string };
+export type Game = {
+  name: string;
+  genre: string;
+  /** Official artwork (e.g. the Steam header), shown when the game is hovered or tapped. */
+  art?: string;
+};
 export type GameCategory = { id: string; title: string; blurb: string; games: Game[] };
 
 export type Certificate = {
   title: string;
+  /** Issuing organization. */
   issuer: string;
-  year: string;
+  /** Date issued, written as you want it shown, e.g. "March 2026". */
+  date: string;
+  /** Certificate image or preview in /public, e.g. "/images/certificates/cs50.webp". */
   image?: string;
+  /** Optional verification / credential link. */
   href?: string;
-  placeholder?: boolean;
 };

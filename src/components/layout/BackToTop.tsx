@@ -13,10 +13,10 @@ export default function BackToTop() {
     <button
       type="button"
       onClick={toTop}
-      className="group inline-flex items-center gap-3 text-sm text-mute transition-colors hover:text-ink"
+      className="group inline-flex items-center gap-3 text-sm text-mute transition-colors hover:text-accent"
     >
       Back to top
-      <span className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border border-line transition-colors duration-300 group-hover:border-ink group-hover:bg-ink group-hover:text-paper">
+      <span className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border border-moon/45 transition-colors duration-500 group-hover:border-moon group-hover:bg-moon/12 group-hover:text-accent">
         <ArrowUp size={16} className="transition-transform duration-500 ease-out-expo group-hover:-translate-y-0.5" />
       </span>
     </button>

@@ -1,20 +1,42 @@
 import type { Metadata, Viewport } from "next";
-import { IBM_Plex_Sans, JetBrains_Mono } from "next/font/google";
+import localFont from "next/font/local";
 import Providers from "@/components/Providers";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import Intro from "@/components/celestial/Intro";
+import SparkleTrail from "@/components/celestial/SparkleTrail";
+import Starfield from "@/components/celestial/Starfield";
 import { profile } from "@/data/profile";
 import "./globals.css";
 
-// IBM Plex Sans: 400 body · 500 nav, buttons, small headings · 600 section headings and titles.
-const plex = IBM_Plex_Sans({
-  subsets: ["latin"],
-  weight: ["400", "500", "600"],
-  style: ["normal", "italic"],
-  variable: "--font-plex",
+// Fonts are self-hosted (src/fonts, SIL Open Font License, latin subset), so
+// builds never depend on reaching Google Fonts.
+// Cormorant Garamond: display headings (500, with italics for emphasis).
+// Cinzel: engraved capitals (labels, numerals, the hero motto).
+// Manrope: body, navigation and buttons.
+const cormorant = localFont({
+  src: [
+    { path: "../fonts/cormorant-garamond-normal.woff2", weight: "400 600", style: "normal" },
+    { path: "../fonts/cormorant-garamond-italic.woff2", weight: "400 600", style: "italic" },
+  ],
+  variable: "--font-cormorant",
   display: "swap",
+  fallback: ["Georgia", "serif"],
 });
-const mono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-code", display: "swap" });
+const manrope = localFont({
+  src: "../fonts/manrope-normal.woff2",
+  weight: "200 800",
+  variable: "--font-manrope",
+  display: "swap",
+  fallback: ["ui-sans-serif", "system-ui", "sans-serif"],
+});
+const cinzel = localFont({
+  src: "../fonts/cinzel-normal.woff2",
+  weight: "400 600",
+  variable: "--font-cinzel",
+  display: "swap",
+  fallback: ["Georgia", "serif"],
+});
 
 const siteUrl =
   profile.siteUrl ||
@@ -44,27 +66,35 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#f3efe7" },
-    { media: "(prefers-color-scheme: dark)", color: "#0b1120" },
+    { media: "(prefers-color-scheme: light)", color: "#f3efe5" },
+    { media: "(prefers-color-scheme: dark)", color: "#10172b" },
   ],
 };
 
-// Runs before paint: applies the saved (or system) theme so there's no flash.
-const themeScript = `try{var t=localStorage.getItem("theme");if(t!=="light"&&t!=="dark"){t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"}document.documentElement.dataset.theme=t}catch(e){}`;
+// Runs before paint, so there's no flash:
+//  • theme — the visitor's saved choice, otherwise the night sky (dark);
+//  • intro — the opening animation plays once per browser session.
+const themeScript = `try{var d=document.documentElement,t=localStorage.getItem("theme");d.dataset.theme=t==="light"||t==="dark"?t:"dark";if(sessionStorage.getItem("intro")){d.dataset.intro="off"}else{sessionStorage.setItem("intro","1")}}catch(e){}`;
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning className={`${plex.variable} ${mono.variable}`}>
+    <html lang="en" data-theme="dark" suppressHydrationWarning className={`${cormorant.variable} ${manrope.variable} ${cinzel.variable}`}>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
       <body className="font-sans antialiased">
+        <Intro />
         <Providers>
-          <Navbar />
-          <main id="main" tabIndex={-1} className="outline-none">
-            {children}
-          </main>
-          <Footer />
+          <SparkleTrail />
+          {/* `isolate` keeps the fixed starfield behind content but above the page background. */}
+          <div className="relative isolate">
+            <Starfield />
+            <Navbar />
+            <main id="main" tabIndex={-1} className="outline-none">
+              {children}
+            </main>
+            <Footer />
+          </div>
         </Providers>
       </body>
     </html>

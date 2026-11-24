@@ -20,7 +20,7 @@ export default function CopyEmail({ email }: { email: string }) {
     <button
       type="button"
       onClick={copy}
-      className="inline-flex h-12 items-center gap-2 rounded-full border border-line bg-card/60 px-5 text-sm font-medium backdrop-blur transition-colors duration-300 hover:border-ink"
+      className="inline-flex h-12 items-center gap-2 rounded-full border border-moon/55 bg-card/30 px-5 text-sm font-medium backdrop-blur transition-colors duration-500 hover:border-moon hover:bg-moon/10 hover:text-accent"
     >
       <AnimatePresence mode="wait" initial={false}>
         <motion.span
@@ -31,7 +31,7 @@ export default function CopyEmail({ email }: { email: string }) {
           transition={{ duration: 0.2 }}
           className="inline-flex items-center gap-2"
         >
-          {copied ? <Check size={16} className="text-emerald-600" /> : <Copy size={16} />}
+          {copied ? <Check size={16} className="text-accent" /> : <Copy size={16} />}
           {copied ? "Copied!" : "Copy email"}
         </motion.span>
       </AnimatePresence>

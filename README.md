@@ -40,13 +40,28 @@ mobileThumbnail: { src: "/images/projects/beanzz-mobile.webp", alt: "BeanZz on a
 previews: [{ src: "/images/projects/beanzz-reader.webp", alt: "Reading view" }],          // detail-page gallery
 ```
 
-Without a thumbnail, a plain placeholder with the project name is shown; without
+Without a thumbnail, an engraved panel with the project name is shown; without
 `mobileThumbnail`, the phone mockup is hidden.
 
 ### Adding a project
-Copy the BeanZz entry, change the fields, and delete one placeholder.
-Optional links (`liveUrl`, `githubUrl`) only render when filled in.
-A detail page is generated at `/projects/<slug>` for every non-placeholder project.
+Copy an entry in `projects.ts` and change the fields.
+Optional links (`liveUrl`, `githubUrl`) only render when filled in. When `liveUrl`
+is set, the project's preview image links to the live site.
+A detail page is generated at `/projects/<slug>` for every project.
+
+### Adding a certificate
+Add an entry to `src/data/certificates.ts` (a template is in the file):
+`title`, `issuer`, `date`, plus optional `image` (in `public/images/certificates/`)
+and `href` (verification link). Until the first one is added, the Certificates
+section shows an empty archive.
+
+### Design system
+Colors live as tokens in `src/app/globals.css` (shared names, separate light and
+dark values). Decorative SVGs — stars, suns, crescents, clouds, the hero arch,
+the scrolling band, the sky — are in `src/components/celestial/`.
+Fonts (Cormorant Garamond, Cinzel, Manrope) are self-hosted in `src/fonts/`, so
+builds don't need to reach Google Fonts. The hero motto is `motto` in `profile.ts`.
+New visitors see the dark theme; the toggle remembers their choice.
 
 ### Social links
 Empty `href` values (GitHub, LinkedIn) show as muted "Soon" rows — fill them in to activate.

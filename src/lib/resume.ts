@@ -7,7 +7,6 @@ export type ResumeInfo = {
   available: boolean;
   href: string;
   downloadName: string;
-  sizeLabel?: string;
   lastUpdated?: string;
 };
 
@@ -23,9 +22,7 @@ export function getResumeInfo(): ResumeInfo {
     const file = path.join(process.cwd(), "public", href.replace(/^\/+/, ""));
     const stat = fs.statSync(file);
     if (!stat.isFile() || stat.size === 0) return { ...base, available: false };
-    const kb = stat.size / 1024;
-    const sizeLabel = kb > 1024 ? `${(kb / 1024).toFixed(1)} MB` : `${Math.max(1, Math.round(kb))} KB`;
-    return { ...base, available: true, sizeLabel };
+    return { ...base, available: true };
   } catch {
     return { ...base, available: false };
   }

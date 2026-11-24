@@ -2,6 +2,7 @@
 import { motion, useScroll, useSpring } from "motion/react";
 import { useRef } from "react";
 import type { TimelineEntry, TimelineKind } from "@/types";
+import { EightStar } from "@/components/celestial/Ornaments";
 import { ease, inViewOnce } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 
@@ -22,8 +23,8 @@ export default function Timeline({ entries }: { entries: TimelineEntry[] }) {
 
   return (
     <ol ref={ref} className="relative">
-      <span aria-hidden="true" className="absolute bottom-2 left-[5px] top-2 w-px bg-line" />
-      <motion.span aria-hidden="true" style={{ scaleY }} className="absolute bottom-2 left-[5px] top-2 w-px origin-top bg-accent" />
+      <span aria-hidden="true" className="absolute bottom-2 left-[7px] top-2 w-px bg-moon/20" />
+      <motion.span aria-hidden="true" style={{ scaleY }} className="absolute bottom-2 left-[7px] top-2 w-px origin-top bg-linear-to-b from-moon to-accent" />
 
       {entries.map((e, i) => (
         <motion.li
@@ -32,22 +33,27 @@ export default function Timeline({ entries }: { entries: TimelineEntry[] }) {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={inViewOnce}
           transition={{ duration: 0.7, ease }}
-          className="relative pb-10 pl-9 last:pb-0"
+          className="relative pb-12 pl-10 last:pb-0"
         >
-          <span
-            aria-hidden="true"
-            className={cn(
-              "absolute left-0 top-[0.4rem] h-[11px] w-[11px] rounded-full border-2 bg-paper",
-              e.placeholder ? "border-dashed border-faint" : "border-accent",
-              e.current && "bg-accent",
-            )}
-          />
-          <p className="label">
+          {e.current ? (
+            <span aria-hidden="true" className="absolute -left-[2px] top-[0.05rem] flex rounded-full bg-paper p-[1px] text-moon">
+              <EightStar size={18} className="animate-twinkle [animation-duration:5s]" />
+            </span>
+          ) : (
+            <span
+              aria-hidden="true"
+              className={cn(
+                "absolute left-[2px] top-[0.3rem] h-[11px] w-[11px] rotate-45 border bg-paper",
+                e.placeholder ? "border-dashed border-faint" : "border-moon",
+              )}
+            />
+          )}
+          <p className="eyebrow text-mute">
             {KIND[e.kind]}
             {e.period && <> · {e.period}</>}
             {e.current && <span className="text-accent"> · Current</span>}
           </p>
-          <h3 className={cn("mt-1 font-display text-[clamp(1.4rem,2.2vw,1.8rem)] font-semibold leading-tight tracking-[-0.02em]", e.placeholder && "text-mute")}>
+          <h3 className={cn("display mt-2 text-[clamp(1.7rem,2.6vw,2.2rem)] leading-[1.1]", e.placeholder && "text-mute")}>
             {e.title}
           </h3>
           {e.org && <p className="mt-0.5">{e.org}</p>}

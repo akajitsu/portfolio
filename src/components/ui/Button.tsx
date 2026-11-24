@@ -24,16 +24,24 @@ type AsButton = Common & { href?: undefined; onClick?: () => void; disabled?: bo
 type AsDisabled = Common & { href?: string; disabled: true; disabledLabel?: string };
 
 const base =
-  "group/btn relative inline-flex select-none items-center justify-center gap-2 rounded-full font-medium whitespace-nowrap transition-[background-color,color,border-color,transform,box-shadow] duration-300 ease-out-expo active:scale-[0.97]";
+  "group/btn relative inline-flex select-none items-center justify-center gap-2 rounded-full font-medium tracking-[0.01em] whitespace-nowrap transition-[background-color,color,border-color,transform,box-shadow] duration-500 ease-out-expo active:scale-[0.97]";
 
 const sizes = {
-  md: "h-12 px-6 text-[0.95rem]",
+  md: "h-12 px-6 text-[0.9rem]",
   sm: "h-10 px-4 text-sm",
 };
 
+/** A soft band of light that sweeps across the button on hover. */
+const sheen =
+  "overflow-hidden before:pointer-events-none before:absolute before:inset-y-0 before:-left-1/2 before:w-1/2 before:-skew-x-12 before:bg-linear-to-r before:from-transparent before:via-white/35 before:to-transparent before:-translate-x-full before:transition-transform before:duration-[900ms] before:ease-out hover:before:translate-x-[420%]";
+
 const variants: Record<Variant, string> = {
-  primary: "bg-ink text-paper hover:bg-accent dark:bg-accent dark:hover:bg-ink",
-  secondary: "border border-line bg-card/60 text-ink backdrop-blur hover:border-ink",
+  // Midnight ink by day, champagne gold by night.
+  primary:
+    sheen +
+    " bg-ink text-paper shadow-[0_10px_30px_-14px_rgba(16,23,43,0.55)] hover:bg-accent dark:bg-accent dark:text-night dark:shadow-[0_10px_34px_-14px_rgba(228,197,139,0.45)] dark:hover:bg-[#f0d9a6]",
+  // Minimal gold outline.
+  secondary: sheen + " border border-moon/55 bg-card/30 text-ink backdrop-blur hover:border-moon hover:bg-moon/10 hover:text-accent",
   ghost: "!px-3 text-ink hover:text-accent",
 };
 
@@ -55,7 +63,7 @@ export default function Button(props: AsLink | AsButton | AsDisabled) {
       <span
         aria-disabled="true"
         title={props.disabledLabel}
-        className={cn(base, sizes[size], "cursor-not-allowed border border-dashed border-line text-mute active:scale-100", className)}
+        className={cn(base, sizes[size], "cursor-not-allowed border border-dashed border-moon/40 text-mute active:scale-100", className)}
       >
         {children}
         {props.disabledLabel && (

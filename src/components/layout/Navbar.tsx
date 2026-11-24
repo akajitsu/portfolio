@@ -3,6 +3,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion, useScroll, useSpring } from "motion/react";
 import { useEffect, useRef, useState } from "react";
+import { Crescent, EightStar, Sparkle, roman } from "@/components/celestial/Ornaments";
 import ThemeToggle from "@/components/ui/ThemeToggle";
 import { navigation } from "@/data/navigation";
 import { profile } from "@/data/profile";
@@ -86,39 +87,29 @@ export default function Navbar() {
       <motion.div
         aria-hidden="true"
         style={{ scaleX: progress }}
-        className="fixed inset-x-0 top-0 z-[55] h-[2px] origin-left bg-accent"
+        className="fixed inset-x-0 top-0 z-[55] h-px origin-left bg-linear-to-r from-moon/0 via-moon to-accent"
       />
 
       <header
         className={cn(
-          "fixed inset-x-0 top-0 z-50 transition-[background-color,border-color,backdrop-filter] duration-500",
-          scrolled ? "border-b border-line/60 bg-paper/70 backdrop-blur-xl" : "border-b border-transparent",
+          "fixed inset-x-0 top-0 z-50 transition-[background-color,backdrop-filter] duration-500",
+          scrolled ? "bg-paper/75 backdrop-blur-xl" : "bg-transparent",
         )}
       >
         <div className="shell flex h-[4.5rem] items-center justify-between gap-4">
           {/* Logo */}
           <Link
             href={isHome ? "#home" : "/"}
-            className="group flex items-baseline gap-1.5 font-display text-2xl font-semibold leading-none tracking-[-0.02em]"
+            className="group flex items-center gap-2 font-display text-[1.75rem] font-medium leading-none tracking-[-0.01em]"
             aria-label={`${profile.name} — home`}
           >
-            <span className="relative">
-              {profile.shortName}
-              <span className="text-accent">.</span>
-            </span>
+            <EightStar size={15} className="text-moon transition-transform duration-700 ease-out-expo group-hover:rotate-45" />
+            {profile.shortName}
           </Link>
 
-          {/* Desktop pill */}
-          <nav
-            aria-label="Primary"
-            className={cn(
-              "absolute left-1/2 hidden -translate-x-1/2 rounded-full border p-1 backdrop-blur-xl transition-[background-color,border-color,box-shadow] duration-500 md:block",
-              scrolled
-                ? "border-line bg-card/75 shadow-[0_8px_30px_-15px_rgba(0,0,0,0.25)]"
-                : "border-transparent bg-transparent",
-            )}
-          >
-            <ul className="flex items-center">
+          {/* Desktop links */}
+          <nav aria-label="Primary" className="absolute left-1/2 hidden -translate-x-1/2 lg:block">
+            <ul className="flex items-center gap-1">
               {navigation.map((item) => {
                 const isActive = isHome && active === item.id;
                 return (
@@ -127,8 +118,8 @@ export default function Navbar() {
                       href={hrefFor(item.id)}
                       aria-current={isActive ? "true" : undefined}
                       className={cn(
-                        "relative z-10 block rounded-full px-4 py-2 text-sm font-medium transition-colors duration-300",
-                        isActive ? "text-paper" : "text-mute hover:text-ink",
+                        "relative block px-3 py-2 text-[0.8125rem] font-medium tracking-[0.02em] transition-colors duration-300",
+                        isActive ? "text-ink" : "text-mute hover:text-accent",
                       )}
                     >
                       {item.label}
@@ -136,9 +127,12 @@ export default function Navbar() {
                     {isActive && (
                       <motion.span
                         layoutId="nav-active"
-                        className="absolute inset-0 rounded-full bg-ink dark:bg-accent"
+                        aria-hidden="true"
+                        className="absolute -bottom-1 left-1/2 flex -translate-x-1/2 text-moon"
                         transition={{ type: "spring", stiffness: 380, damping: 32 }}
-                      />
+                      >
+                        <Sparkle size={9} />
+                      </motion.span>
                     )}
                   </li>
                 );
@@ -155,24 +149,26 @@ export default function Navbar() {
               aria-expanded={open}
               aria-controls="mobile-menu"
               aria-label={open ? "Close menu" : "Open menu"}
-              className="relative flex h-10 w-10 items-center justify-center rounded-full border border-line bg-card/70 backdrop-blur md:hidden"
+              className="relative flex h-10 w-10 items-center justify-center rounded-full border border-moon/35 bg-card/60 backdrop-blur transition-colors hover:border-moon lg:hidden"
             >
               <span className="sr-only">Menu</span>
               <span
                 className={cn(
-                  "absolute h-[1.5px] w-4 bg-ink transition-transform duration-300 ease-out-expo",
+                  "absolute h-px w-4 bg-ink transition-transform duration-300 ease-out-expo",
                   open ? "rotate-45" : "-translate-y-[3.5px]",
                 )}
               />
               <span
                 className={cn(
-                  "absolute h-[1.5px] w-4 bg-ink transition-transform duration-300 ease-out-expo",
+                  "absolute h-px w-4 bg-ink transition-transform duration-300 ease-out-expo",
                   open ? "-rotate-45" : "translate-y-[3.5px]",
                 )}
               />
             </button>
           </div>
         </div>
+        {/* Gold hairline once the page has scrolled */}
+        <div aria-hidden="true" className={cn("rule-fade transition-opacity duration-500", scrolled ? "opacity-60" : "opacity-0")} />
       </header>
 
       {/* Mobile sheet */}
@@ -187,39 +183,46 @@ export default function Navbar() {
             animate={{ clipPath: "inset(0 0 0% 0)" }}
             exit={{ clipPath: "inset(0 0 100% 0)" }}
             transition={{ duration: 0.6, ease }}
-            className="fixed inset-0 z-40 flex flex-col bg-paper pt-[4.5rem] md:hidden"
+            className="fixed inset-0 z-40 flex flex-col overflow-y-auto bg-paper pt-[4.5rem] lg:hidden"
           >
-            <nav aria-label="Mobile" className="shell flex flex-1 flex-col justify-center">
-              <ul className="space-y-1">
-                {navigation.map((item, i) => (
-                  <motion.li
-                    key={item.id}
-                    initial={{ opacity: 0, y: 24 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.6, ease, delay: 0.12 + i * 0.05 }}
-                    className="border-b border-line"
-                  >
-                    <a
-                      href={hrefFor(item.id)}
-                      onClick={() => setOpen(false)}
-                      aria-current={isHome && active === item.id ? "true" : undefined}
-                      className={cn(
-                        "block py-3 font-display text-[2.75rem] font-medium leading-tight tracking-[-0.025em]",
-                        isHome && active === item.id && "text-accent",
-                      )}
+            <Crescent aria-hidden="true" size={220} className="pointer-events-none absolute -right-16 top-24 text-moon opacity-[0.08]" />
+            <nav aria-label="Mobile" className="shell relative flex flex-1 flex-col justify-center py-8">
+              <ul>
+                {navigation.map((item, i) => {
+                  const isActive = isHome && active === item.id;
+                  return (
+                    <motion.li
+                      key={item.id}
+                      initial={{ opacity: 0, y: 24 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.6, ease, delay: 0.12 + i * 0.05 }}
+                      className="border-b border-line"
                     >
-                      {item.label}
-                    </a>
-                  </motion.li>
-                ))}
+                      <a
+                        href={hrefFor(item.id)}
+                        onClick={() => setOpen(false)}
+                        aria-current={isActive ? "true" : undefined}
+                        className={cn(
+                          "flex items-baseline gap-4 py-2.5 font-display text-[2.4rem] font-medium leading-tight",
+                          isActive && "text-accent",
+                        )}
+                      >
+                        <span aria-hidden="true" className="eyebrow w-8 text-moon">
+                          {roman(i + 1)}
+                        </span>
+                        {item.label}
+                      </a>
+                    </motion.li>
+                  );
+                })}
               </ul>
             </nav>
             <motion.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.5 }}
-              className="shell label pb-8"
+              className="shell label relative pb-8"
             >
               {profile.email}
             </motion.p>

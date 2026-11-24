@@ -1,5 +1,7 @@
+import { Constellation } from "@/components/celestial/Constellation";
+import HeroCelestial from "@/components/celestial/HeroCelestial";
+import { EightStar } from "@/components/celestial/Ornaments";
 import AnimatedRoles from "@/components/profile/AnimatedRoles";
-import ProfileVisual from "@/components/profile/ProfileVisual";
 import Button from "@/components/ui/Button";
 import FadeIn from "@/components/ui/FadeIn";
 import RevealLines from "@/components/ui/RevealLines";
@@ -9,33 +11,47 @@ import { getResumeInfo } from "@/lib/resume";
 
 const article = (word: string) => (/^[aeiou]/i.test(word) ? "an" : "a");
 
+const NORTH: { points: [number, number][]; edges: [number, number][] } = {
+  points: [[6, 62], [24, 40], [46, 48], [60, 22], [82, 30], [94, 8], [70, 70]],
+  edges: [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [2, 6]],
+};
+
 export default function Hero() {
   const resume = getResumeInfo();
   const firstRole = profile.roles[0] ?? "";
 
   return (
-    <section id="home" aria-label="Introduction" className="relative overflow-x-clip pb-16 pt-28 sm:pt-32 lg:flex lg:min-h-[92svh] lg:items-center lg:pb-20">
-      <div className="shell grid items-center gap-x-12 gap-y-14 lg:grid-cols-12">
-        <div className="lg:col-span-7">
-          <RevealLines
-            delay={0.05}
-            className="font-display text-[clamp(2.25rem,5vw,4.25rem)] font-semibold leading-[1.04] tracking-[-0.03em]"
-            lines={[profile.greeting, ...profile.headline]}
-            lineClassNames={[undefined, "text-mute", "text-mute"]}
-          />
+    <section id="home" aria-label="Introduction" className="relative isolate overflow-x-clip pb-24 pt-28 sm:pt-32 lg:flex lg:min-h-[100svh] lg:items-center">
+      <Constellation {...NORTH} delay={1.6} className="pointer-events-none absolute left-[46%] top-[16%] -z-10 hidden w-36 opacity-70 xl:block" />
 
-          <FadeIn trigger="mount" delay={0.35}>
-            <p className="mt-8 text-xl sm:text-2xl">
-              I&apos;m {article(firstRole)} <AnimatedRoles roles={profile.roles} className="font-medium text-accent" />
+      <div className="shell relative grid items-center gap-x-10 gap-y-14 lg:grid-cols-12">
+        <div className="lg:col-span-7">
+          <FadeIn trigger="mount" y={8}>
+            <p className="eyebrow flex items-center gap-2.5">
+              <EightStar size={13} className="animate-twinkle text-moon [animation-duration:4s]" />
+              {profile.title}
             </p>
           </FadeIn>
 
-          <FadeIn trigger="mount" delay={0.45}>
-            <p className="mt-5 max-w-xl text-lg leading-relaxed">{profile.tagline}</p>
+          <RevealLines
+            delay={0.1}
+            className="display mt-6 text-[clamp(2.9rem,6.4vw,5.6rem)] leading-[0.98]"
+            lines={[profile.greeting, ...profile.headline]}
+            lineClassNames={[undefined, "italic font-normal text-shimmer pr-[0.08em]", "italic font-normal text-shimmer pr-[0.08em]"]}
+          />
+
+          <FadeIn trigger="mount" delay={0.4}>
+            <p className="mt-8 text-lg sm:text-xl">
+              I&apos;m {article(firstRole)} <AnimatedRoles roles={profile.roles} className="font-semibold text-accent" />
+            </p>
+          </FadeIn>
+
+          <FadeIn trigger="mount" delay={0.5}>
+            <p className="mt-5 max-w-xl text-[1.08rem] leading-relaxed">{profile.tagline}</p>
             <p className="mt-3 max-w-xl leading-relaxed text-mute">{profile.intro}</p>
           </FadeIn>
 
-          <FadeIn trigger="mount" delay={0.55} className="mt-9 flex flex-wrap items-center gap-3">
+          <FadeIn trigger="mount" delay={0.6} className="mt-10 flex flex-wrap items-center gap-3">
             <Button href="#work" icon={<ArrowDown size={16} />}>
               Explore my work
             </Button>
@@ -58,16 +74,26 @@ export default function Hero() {
         </div>
 
         <div className="lg:col-span-5">
-          <ProfileVisual
+          <HeroCelestial
             src={profile.photo.src || undefined}
             alt={profile.photo.alt}
             objectPosition={profile.photo.position}
             name={profile.name}
-            priority
-            className="max-w-[300px] sm:max-w-[380px] lg:max-w-[420px]"
+            motto={profile.motto}
+            className="max-w-[330px] sm:max-w-[400px] lg:max-w-[440px]"
           />
         </div>
       </div>
+
+      {/* Scroll cue */}
+      <a
+        href="#work"
+        aria-label="Scroll to projects"
+        className="group absolute bottom-6 left-1/2 hidden -translate-x-1/2 flex-col items-center gap-2 text-moon lg:flex"
+      >
+        <span className="h-10 w-px bg-linear-to-b from-transparent to-moon/70 transition-[height] duration-500 group-hover:h-12" />
+        <EightStar size={11} className="animate-float" />
+      </a>
     </section>
   );
 }

@@ -17,6 +17,12 @@ export const profile = {
   intro:
     "I'm a BSIT student learning programming and web development. I know the basics of C++, Java, JavaScript, HTML and CSS, and I'm building my first projects.",
 
+  /**
+   * Engraved along the top of the hero arch (from the reference illustration):
+   * "through hardship to the stars". Change it to anything, or "" to hide it.
+   */
+  motto: "Per ardua ad astra",
+
   /** Rotating words after "I'm a / an …" in the hero. */
   roles: ["Web Developer", "Frontend Developer", "BSIT Student", "Creative Developer", "Problem Solver"],
 

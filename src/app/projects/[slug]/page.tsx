@@ -4,6 +4,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ProjectLinks, StatusChip, TechTags } from "@/components/projects/ProjectCard";
 import ProjectPreview from "@/components/projects/ProjectPreview";
+import { OrnamentRule } from "@/components/celestial/Ornaments";
 import FadeIn from "@/components/ui/FadeIn";
 import { ArrowRight } from "@/components/ui/Icons";
 import { getProject, realProjects } from "@/data/projects";
@@ -40,15 +41,16 @@ export default async function ProjectPage({ params }: Params) {
   return (
     <article className="shell pb-24 pt-32">
       <FadeIn trigger="mount" y={6}>
-        <Link href="/#work" className="inline-flex items-center gap-1.5 text-sm text-mute transition-colors hover:text-ink">
+        <Link href="/#work" className="inline-flex items-center gap-1.5 text-sm text-mute transition-colors hover:text-accent">
           <ArrowRight size={14} className="rotate-180" /> All projects
         </Link>
       </FadeIn>
 
-      <header className="mt-8 border-t border-line pt-8">
-        <FadeIn trigger="mount">
+      <header className="mt-8">
+        <OrnamentRule align="start" />
+        <FadeIn trigger="mount" className="mt-8">
           <StatusChip status={project.status} />
-          <h1 className="mt-2 font-display text-[clamp(2.5rem,6.5vw,5rem)] font-semibold leading-none tracking-[-0.03em]">{project.name}</h1>
+          <h1 className="display mt-3 text-[clamp(3rem,7.5vw,6rem)]">{project.name}</h1>
         </FadeIn>
         <div className="mt-8 grid gap-10 lg:grid-cols-12">
           <FadeIn trigger="mount" delay={0.1} className="lg:col-span-7">
@@ -58,7 +60,7 @@ export default async function ProjectPage({ params }: Params) {
             </div>
           </FadeIn>
           <FadeIn trigger="mount" delay={0.15} className="lg:col-span-4 lg:col-start-9">
-            <dl className="divide-y divide-line border-y border-line">
+            <dl className="divide-y divide-moon/25 border-y border-moon/25">
               {facts
                 .filter(([, v]) => v)
                 .map(([k, v]) => (
@@ -78,8 +80,8 @@ export default async function ProjectPage({ params }: Params) {
       </FadeIn>
 
       {(project.highlights?.length || project.details?.length) && (
-        <section className="mt-28 grid gap-10 border-t border-line pt-8 lg:grid-cols-12" aria-labelledby="overview-title">
-          <h2 id="overview-title" className="font-display text-3xl font-semibold tracking-[-0.02em] lg:col-span-4">
+        <section className="mt-28 grid gap-10 border-t border-moon/25 pt-8 lg:grid-cols-12" aria-labelledby="overview-title">
+          <h2 id="overview-title" className="display text-4xl lg:col-span-4">
             Overview
           </h2>
           <div className="lg:col-span-8">
@@ -89,10 +91,10 @@ export default async function ProjectPage({ params }: Params) {
               </FadeIn>
             ))}
             {project.highlights && (
-              <dl className="mt-6 divide-y divide-line border-y border-line">
+              <dl className="mt-6 divide-y divide-moon/25 border-y border-moon/25">
                 {project.highlights.map((h) => (
                   <FadeIn key={h.title} className="grid gap-1 py-4 sm:grid-cols-[9rem_1fr] sm:gap-6">
-                    <dt className="font-medium">{h.title}</dt>
+                    <dt className="display text-[1.2rem] italic">{h.title}</dt>
                     <dd className="leading-relaxed text-mute">{h.body}</dd>
                   </FadeIn>
                 ))}
@@ -103,14 +105,14 @@ export default async function ProjectPage({ params }: Params) {
       )}
 
       {project.previews && project.previews.length > 0 && (
-        <section className="mt-24 border-t border-line pt-8" aria-labelledby="screens-title">
-          <h2 id="screens-title" className="font-display text-3xl font-semibold tracking-[-0.02em]">
+        <section className="mt-24 border-t border-moon/25 pt-8" aria-labelledby="screens-title">
+          <h2 id="screens-title" className="display text-4xl">
             Screenshots
           </h2>
           <div className="mt-8 grid gap-6 md:grid-cols-2">
             {project.previews.map((img) => (
               <FadeIn key={img.src} as="article">
-                <div className="relative aspect-[16/10] overflow-hidden rounded-xl border border-line bg-paper-2">
+                <div className="relative aspect-[16/10] overflow-hidden rounded-xl border border-moon/30 bg-paper-2">
                   <Image src={img.src} alt={img.alt} fill sizes="(min-width: 768px) 50vw, 100vw" className="object-cover object-top" />
                 </div>
                 <p className="label mt-3">{img.alt}</p>
@@ -120,15 +122,15 @@ export default async function ProjectPage({ params }: Params) {
         </section>
       )}
 
-      <nav aria-label="More projects" className="mt-28 border-t border-line pt-8">
+      <nav aria-label="More projects" className="mt-28 border-t border-moon/25 pt-8">
         <Link href={others[0] ? `/projects/${others[0].slug}` : "/#work"} className="group flex items-end justify-between gap-6">
           <span>
             <span className="label">{others[0] ? "Next project" : "Back to"}</span>
-            <span className="mt-1 block font-display text-[clamp(1.9rem,4.2vw,3.25rem)] font-semibold leading-none tracking-[-0.025em] transition-colors group-hover:text-accent">
+            <span className="display mt-1 block text-[clamp(2.2rem,4.8vw,3.8rem)] italic transition-colors group-hover:text-accent">
               {others[0]?.name ?? "All projects"}
             </span>
           </span>
-          <ArrowRight size={32} className="mb-2 shrink-0 transition-transform duration-300 group-hover:translate-x-1" />
+          <ArrowRight size={32} className="mb-2 shrink-0 text-moon transition-transform duration-300 group-hover:translate-x-1" />
         </Link>
       </nav>
     </article>
