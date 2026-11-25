@@ -1,26 +1,61 @@
 "use client";
 import { useEffect, useRef } from "react";
 
-/** Stars within this distance of the pointer wake up. */
+/** Stars within this distance of the pointer wake up (glow and swell). */
 const WAKE = 150;
 /** Stars within this distance can join the pointer's little constellation. */
-const LINK = 210;
-/** At most this many lines at once (so at most five stars are joined). */
-const LINES = 4;
-/** Dust within this distance is nudged aside. */
-const PUSH = 110;
+const LINK = 190;
+/** Never draw a line longer than this, so no long strokes cross the sky. */
+const MAX_SEGMENT = 165;
+/** Element pools: glows and lines are reused, never created per frame. */
+const GLOWS = 6;
+const LINES = 5;
+/** How long a released glow or line takes to fade (matches the CSS). */
+const FADE_MS = 850;
 
-type Pt = { el: Element; x: number; y: number; d: number };
+type Pt = { i: number; el: Element; x: number; y: number; d: number };
+type Slot<T> = { el: T; key: string | null; last: string | null; freeAt: number };
+
+/**
+ * Pools of overlay elements keyed by what they show (a star, or a pair of
+ * stars). An element keeps its key while it's needed, so it never jumps to
+ * another star mid-fade; released ones fade out in place before reuse.
+ */
+function acquire<T>(slots: Slot<T>[], key: string, now: number): Slot<T> | null {
+  const held = slots.find((s) => s.key === key);
+  if (held) return held;
+  // Coming back to something that's still fading out: pick it up in place.
+  const resumed = slots.find((s) => s.key === null && s.last === key);
+  if (resumed) {
+    resumed.key = key;
+    return resumed;
+  }
+  const free = slots.filter((s) => s.key === null).sort((a, b) => a.freeAt - b.freeAt)[0];
+  if (!free || free.freeAt > now) return null; // all busy or still fading: skip this one
+  free.key = free.last = key;
+  return free;
+}
+function release<T extends SVGElement>(slots: Slot<T>[], keep: Set<string>, now: number) {
+  for (const s of slots) {
+    if (s.key !== null && !keep.has(s.key)) {
+      s.last = s.key;
+      s.key = null;
+      s.freeAt = now + FADE_MS;
+      s.el.style.opacity = "0";
+    }
+  }
+}
 
 /**
  * Lets the fixed sky respond to a mouse, subtly:
- *  • visible stars near the pointer brighten (a halo fades up, they swell);
- *  • the nearest few are joined by hairline constellation lines;
+ *  • visible stars near the pointer swell and a soft glow fades up around them;
+ *  • the nearest few are joined by short hairline constellation lines;
  *  • gold dust nearby drifts a little out of the way.
- * Everything eases back when the pointer leaves. Mouse only — touch and
- * pen are ignored — and off entirely with reduced motion. One passive
- * pointermove listener, throttled to one update per animation frame;
- * all changes are direct DOM writes, so React never re-renders.
+ * Glows and lines are drawn on this full-screen overlay (not inside the
+ * star layer), so they're never clipped at a layer edge. Everything fades
+ * back when the pointer leaves. Mouse only — touch and pen are ignored —
+ * and off entirely with reduced motion. One passive pointermove listener,
+ * throttled to one update per frame; all changes are direct DOM writes.
  */
 export default function SkyInteraction() {
   const svg = useRef<SVGSVGElement>(null);
@@ -30,7 +65,8 @@ export default function SkyInteraction() {
     if (!root) return;
     if (!matchMedia("(pointer: fine)").matches || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
-    const lines = Array.from(root.querySelectorAll("line"));
+    const glows: Slot<SVGCircleElement>[] = Array.from(root.querySelectorAll<SVGCircleElement>(".sky-glow"), (el) => ({ el, key: null, last: null, freeAt: 0 }));
+    const lines: Slot<SVGLineElement>[] = Array.from(root.querySelectorAll<SVGLineElement>(".sky-line"), (el) => ({ el, key: null, last: null, freeAt: 0 }));
     let stars: Element[] = [];
     let dust: HTMLElement[] = [];
     const collect = () => {
@@ -42,21 +78,24 @@ export default function SkyInteraction() {
     let px = -1e4;
     let py = -1e4;
     let frame = 0;
+    let active = false;
     let woken = new Set<Element>();
     let pushed = new Set<HTMLElement>();
 
     const update = () => {
       frame = 0;
+      const now = performance.now();
+
       // Read every position first, then write — one layout per frame.
       const near: Pt[] = [];
-      for (const el of stars) {
+      stars.forEach((el, i) => {
         const r = el.getBoundingClientRect();
-        if (r.width === 0) continue; // hidden (e.g. dropped on small screens)
+        if (r.width === 0) return; // hidden (e.g. dropped on small screens)
         const x = r.left + r.width / 2;
         const y = r.top + r.height / 2;
         const d = Math.hypot(x - px, y - py);
-        if (d < LINK) near.push({ el, x, y, d });
-      }
+        if (d < LINK) near.push({ i, el, x, y, d });
+      });
       const dustNear: { el: HTMLElement; dx: number; dy: number; d: number }[] = [];
       for (const el of dust) {
         const r = el.getBoundingClientRect();
@@ -64,54 +103,73 @@ export default function SkyInteraction() {
         const dx = r.left + r.width / 2 - px;
         const dy = r.top + r.height / 2 - py;
         const d = Math.hypot(dx, dy);
-        if (d < PUSH) dustNear.push({ el, dx, dy, d });
+        if (d < 110) dustNear.push({ el, dx, dy, d });
       }
-
       near.sort((a, b) => a.d - b.d);
 
-      // Brighten the stars close to the pointer.
+      // Wake the stars close to the pointer: swell (CSS) + a glow on the overlay.
       const nextWoken = new Set<Element>();
-      for (const p of near) if (p.d < WAKE) nextWoken.add(p.el);
+      const glowKeys = new Set<string>();
+      for (const p of near) {
+        if (p.d >= WAKE) break;
+        nextWoken.add(p.el);
+        const key = String(p.i);
+        const slot = acquire(glows, key, now);
+        if (!slot) continue;
+        glowKeys.add(key);
+        slot.el.setAttribute("cx", p.x.toFixed(1));
+        slot.el.setAttribute("cy", p.y.toFixed(1));
+        slot.el.style.opacity = (0.45 + 0.55 * (1 - p.d / WAKE)).toFixed(3);
+      }
+      release(glows, glowKeys, now);
       woken.forEach((el) => !nextWoken.has(el) && el.removeAttribute("data-near"));
       nextWoken.forEach((el) => !woken.has(el) && el.setAttribute("data-near", ""));
       woken = nextWoken;
 
-      // Join the nearest few, each to its nearest not-yet-joined neighbour.
-      const chain = near.slice(0, LINES + 1);
-      const order: Pt[] = chain.length ? [chain.shift()!] : [];
-      while (chain.length) {
-        const last = order[order.length - 1];
+      // Join the nearest few, each to its nearest neighbour — but only with
+      // short segments, so the figure stays small and close to the pointer.
+      const pool = near.slice(0, LINES + 1);
+      const chain: Pt[] = pool.length ? [pool.shift()!] : [];
+      while (pool.length) {
+        const last = chain[chain.length - 1];
         let best = 0;
-        for (let i = 1; i < chain.length; i++) {
-          if (Math.hypot(chain[i].x - last.x, chain[i].y - last.y) < Math.hypot(chain[best].x - last.x, chain[best].y - last.y)) best = i;
-        }
-        order.push(chain.splice(best, 1)[0]);
+        let bestD = Infinity;
+        pool.forEach((p, k) => {
+          const d = Math.hypot(p.x - last.x, p.y - last.y);
+          if (d < bestD) [best, bestD] = [k, d];
+        });
+        if (bestD > MAX_SEGMENT) break;
+        chain.push(pool.splice(best, 1)[0]);
       }
-      lines.forEach((line, i) => {
-        const a = order[i];
-        const b = order[i + 1];
-        if (!a || !b) {
-          line.style.opacity = "0";
-          return;
-        }
-        line.setAttribute("x1", String(a.x));
-        line.setAttribute("y1", String(a.y));
-        line.setAttribute("x2", String(b.x));
-        line.setAttribute("y2", String(b.y));
+      const lineKeys = new Set<string>();
+      for (let k = 0; k + 1 < chain.length; k++) {
+        const a = chain[k];
+        const b = chain[k + 1];
+        const key = a.i < b.i ? `${a.i}-${b.i}` : `${b.i}-${a.i}`;
+        const slot = acquire(lines, key, now);
+        if (!slot) continue;
+        lineKeys.add(key);
+        slot.el.setAttribute("x1", a.x.toFixed(1));
+        slot.el.setAttribute("y1", a.y.toFixed(1));
+        slot.el.setAttribute("x2", b.x.toFixed(1));
+        slot.el.setAttribute("y2", b.y.toFixed(1));
         // Lines fade with the distance of their farther star from the pointer.
-        line.style.opacity = String(Math.max(0, 1 - Math.max(a.d, b.d) / LINK).toFixed(3));
-      });
+        slot.el.style.opacity = (0.9 * Math.max(0, 1 - Math.max(a.d, b.d) / LINK)).toFixed(3);
+      }
+      release(lines, lineKeys, now);
 
       // Nudge nearby dust away from the pointer.
       const nextPushed = new Set<HTMLElement>();
       for (const p of dustNear) {
-        const k = ((PUSH - p.d) / PUSH) * 22;
+        const k = ((110 - p.d) / 110) * 22;
         const len = p.d || 1;
         p.el.style.translate = `${((p.dx / len) * k).toFixed(1)}px ${((p.dy / len) * k).toFixed(1)}px`;
         nextPushed.add(p.el);
       }
       pushed.forEach((el) => !nextPushed.has(el) && (el.style.translate = ""));
       pushed = nextPushed;
+
+      active = woken.size + pushed.size + lineKeys.size > 0;
     };
 
     const schedule = () => {
@@ -127,8 +185,8 @@ export default function SkyInteraction() {
       px = py = -1e4;
       schedule();
     };
-    // The stars drift with scroll, so re-measure while the pointer is in use.
-    const onScroll = () => woken.size + pushed.size > 0 && schedule();
+    // The stars drift with scroll, so keep glows and lines on them while active.
+    const onScroll = () => active && schedule();
 
     window.addEventListener("pointermove", onMove, { passive: true });
     document.documentElement.addEventListener("pointerleave", onLeave);
@@ -149,6 +207,17 @@ export default function SkyInteraction() {
 
   return (
     <svg ref={svg} aria-hidden="true" className="absolute inset-0 h-full w-full">
+      <defs>
+        <radialGradient id="sky-glow">
+          <stop offset="0" style={{ stopColor: "var(--sky-halo)" }} />
+          <stop offset="1" style={{ stopColor: "var(--sky-halo)", stopOpacity: 0 }} />
+        </radialGradient>
+      </defs>
+      <g fill="url(#sky-glow)">
+        {Array.from({ length: GLOWS }, (_, i) => (
+          <circle key={i} r={22} className="sky-glow" style={{ opacity: 0 }} />
+        ))}
+      </g>
       <g style={{ stroke: "var(--sky-line)" }} strokeWidth={0.75} strokeLinecap="round">
         {Array.from({ length: LINES }, (_, i) => (
           <line key={i} className="sky-line" style={{ opacity: 0 }} />

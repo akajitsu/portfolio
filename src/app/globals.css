@@ -385,16 +385,12 @@ body::after {
 }
 
 /* ─── Interactive sky (see SkyInteraction) ─────────────────────────────────
-   Stars near the pointer get data-near: their halo fades up and they swell.
+   Stars near the pointer get data-near and swell; their glows and the
+   lines between them live on a full-screen overlay, so nothing clips them.
    Dust near the pointer is nudged aside with the independent `translate`
    property, so it never fights the CSS drift animation. */
-.sky-halo {
-  opacity: 0;
-  transition: opacity 0.9s ease;
-}
-[data-near] > .sky-halo {
-  opacity: 1;
-  transition-duration: 0.35s;
+.sky-glow {
+  transition: opacity 0.8s ease;
 }
 .sky-core {
   transform-box: fill-box;
@@ -409,7 +405,7 @@ body::after {
   transition: translate 1.6s var(--ease-out-expo);
 }
 .sky-line {
-  transition: opacity 0.7s ease;
+  transition: opacity 0.6s ease;
 }
 
 /* Theme switch: for a moment, every colour eases instead of snapping

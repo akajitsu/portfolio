@@ -228,15 +228,8 @@ export default function Starfield() {
           className="absolute inset-0 h-full w-full"
           style={{ opacity: "calc(0.4 + var(--star-opacity) * 0.6)" }}
         >
-          <defs>
-            <radialGradient id="sky-halo">
-              <stop offset="0" style={{ stopColor: "var(--sky-halo)" }} />
-              <stop offset="1" style={{ stopColor: "var(--sky-halo)", stopOpacity: 0 }} />
-            </radialGradient>
-          </defs>
           {VISIBLE.map((s, i) => (
             <g key={i} transform={`translate(${s.x} ${s.y})`} data-sky-star="" className={s.mobile ? undefined : "max-sm:hidden"}>
-              <circle className="sky-halo" r={22} fill="url(#sky-halo)" />
               <g className={`sky-core ${s.tone}`} fill="currentColor" fillOpacity={s.o}>
                 <g transform={`scale(${s.s})`}>
                   <g className="origin-self" style={anim(s.anim, s.dur, s.delay)}>
