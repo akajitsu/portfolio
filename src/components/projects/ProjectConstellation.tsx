@@ -20,21 +20,21 @@ const Bayer = ({ i }: { i: number }) => (
 function StarGlyph({ variant }: { variant: number }): ReactNode {
   switch (variant % 3) {
     case 0:
-      return <EightStar size={36} className="text-cream" />;
+      return <EightStar size={36} className="text-moon dark:text-cream" />;
     case 1:
       return (
-        <svg viewBox="-50 -50 100 100" width={40} height={40} aria-hidden="true" className="text-cream">
+        <svg viewBox="-50 -50 100 100" width={40} height={40} aria-hidden="true" className="text-moon dark:text-cream">
           <g stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" opacity={0.7}>
             <path d="M-26 -26L-12 -12M26 -26L12 -12M-26 26L-12 12M26 26L12 12" />
           </g>
           <path d={SPARKLE_G} fill="currentColor" />
-          <circle r={5} fill="var(--color-night)" />
+          <circle r={5} fill="var(--color-paper)" />
           <circle r={2.4} fill="currentColor" />
         </svg>
       );
     default:
       return (
-        <svg viewBox="-50 -50 100 100" width={38} height={38} aria-hidden="true" className="text-cream">
+        <svg viewBox="-50 -50 100 100" width={38} height={38} aria-hidden="true" className="text-moon dark:text-cream">
           <CompassG />
           <path d={SPARKLE_G} transform="scale(0.45)" fill="currentColor" />
         </svg>
@@ -91,7 +91,7 @@ function Chart({ layout, projects, selected, idPrefix, reduce, shown, onSelect, 
 
   return (
     <div className={cn("relative", className)}>
-      <div className="relative overflow-hidden rounded-[22px] border border-moon/25 bg-paper/90 shadow-[0_40px_90px_-60px_rgba(0,0,0,0.8)]" style={{ aspectRatio: `${w} / ${h}` }}>
+      <div className="relative overflow-hidden rounded-[22px] border border-moon/25 bg-paper/90 shadow-[0_40px_90px_-60px_var(--shadow-deep)]" style={{ aspectRatio: `${w} / ${h}` }}>
         <Corners inset="10px" />
 
         <svg viewBox={`0 0 ${w} ${h}`} aria-hidden="true" focusable="false" className="absolute inset-0 h-full w-full text-moon">
@@ -248,7 +248,7 @@ function Chart({ layout, projects, selected, idPrefix, reduce, shown, onSelect, 
                     >
                       <span
                         className={cn(
-                          "block h-full w-full rounded-full bg-[radial-gradient(closest-side,rgba(240,217,166,0.5),rgba(201,155,85,0.16)_55%,transparent)] transition-[filter] duration-700",
+                          "block h-full w-full rounded-full bg-[radial-gradient(closest-side,var(--halo-core),var(--halo-edge)_55%,transparent)] transition-[filter] duration-700",
                           active && "brightness-125",
                         )}
                         style={{ animation: `breathe ${5.5 + i * 1.6}s ease-in-out ${-i * 2.2}s infinite` }}
@@ -262,7 +262,7 @@ function Chart({ layout, projects, selected, idPrefix, reduce, shown, onSelect, 
                       aria-hidden="true"
                       className={cn(
                         "relative flex transition-[scale,filter] duration-500 ease-out-expo group-hover/star:scale-115",
-                        active ? "scale-115 drop-shadow-[0_0_10px_rgba(240,217,166,0.85)]" : "drop-shadow-[0_0_5px_rgba(240,217,166,0.45)]",
+                        active ? "scale-115 drop-shadow-[0_0_10px_var(--star-glow)]" : "drop-shadow-[0_0_5px_var(--star-glow-soft)]",
                       )}
                     >
                       <StarGlyph variant={i} />
@@ -290,7 +290,7 @@ function Chart({ layout, projects, selected, idPrefix, reduce, shown, onSelect, 
                   <p
                     className={cn(
                       "display text-[1.35rem] leading-tight transition-[color,text-shadow] duration-500 sm:text-[1.5rem]",
-                      active ? "text-accent [text-shadow:0_0_16px_rgba(228,197,139,0.4)]" : "text-ink/85",
+                      active ? "text-accent [text-shadow:0_0_16px_var(--text-glow)]" : "text-ink/85",
                     )}
                   >
                     {p.name}

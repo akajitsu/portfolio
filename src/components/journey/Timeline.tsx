@@ -15,16 +15,24 @@ const KIND: Record<TimelineKind, string> = {
   learning: "Learning",
 };
 
-/** Vertical timeline; the line fills in as you scroll through it. */
+/**
+ * Vertical timeline; the line fills in as you scroll through it.
+ * From `sm` up, dates sit in their own column left of the line, so the
+ * period and the description never compete. On phones the date joins the
+ * entry's label instead.
+ */
 export default function Timeline({ entries }: { entries: TimelineEntry[] }) {
   const ref = useRef<HTMLOListElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start 75%", "end 60%"] });
   const scaleY = useSpring(scrollYProgress, { stiffness: 120, damping: 30, restDelta: 0.001 });
 
+  // The line runs at 7px on phones, and through the middle of the gutter from sm up.
+  const line = "absolute bottom-2 top-2 left-[7px] w-px sm:left-[8.25rem]";
+
   return (
     <ol ref={ref} className="relative">
-      <span aria-hidden="true" className="absolute bottom-2 left-[7px] top-2 w-px bg-moon/20" />
-      <motion.span aria-hidden="true" style={{ scaleY }} className="absolute bottom-2 left-[7px] top-2 w-px origin-top bg-linear-to-b from-moon to-accent" />
+      <span aria-hidden="true" className={cn(line, "bg-moon/20")} />
+      <motion.span aria-hidden="true" style={{ scaleY }} className={cn(line, "origin-top bg-linear-to-b from-moon to-accent")} />
 
       {entries.map((e, i) => (
         <motion.li
@@ -33,31 +41,53 @@ export default function Timeline({ entries }: { entries: TimelineEntry[] }) {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={inViewOnce}
           transition={{ duration: 0.7, ease }}
-          className="relative pb-12 pl-10 last:pb-0"
+          className="group/entry relative pb-14 pl-10 last:pb-0 sm:grid sm:grid-cols-[7rem_1fr] sm:gap-x-10 sm:pl-0"
         >
+          {/* Marker: a twinkling star for the current entry, an engraved compass point otherwise */}
           {e.current ? (
-            <span aria-hidden="true" className="absolute -left-[2px] top-[0.05rem] flex rounded-full bg-paper p-[1px] text-moon">
+            <span aria-hidden="true" className="absolute -left-[2px] top-[0.05rem] flex rounded-full bg-paper p-[1px] text-moon sm:left-[calc(8.25rem-10px)]">
               <EightStar size={18} className="animate-twinkle [animation-duration:5s]" />
             </span>
           ) : (
-            <span
+            <svg
               aria-hidden="true"
+              viewBox="0 0 14 14"
               className={cn(
-                "absolute left-[2px] top-[0.3rem] h-[11px] w-[11px] rotate-45 border bg-paper",
-                e.placeholder ? "border-dashed border-faint" : "border-moon",
+                "absolute left-[0.5px] top-[0.2rem] h-[14px] w-[14px] overflow-visible transition-[rotate,scale] duration-700 ease-out-expo group-hover/entry:scale-125 group-hover/entry:rotate-45 sm:left-[calc(8.25rem-7px)]",
+                e.placeholder ? "text-faint" : "text-moon",
               )}
-            />
+            >
+              <path
+                d="M7 0.5L8.6 5.4L13.5 7L8.6 8.6L7 13.5L5.4 8.6L0.5 7L5.4 5.4Z"
+                stroke="currentColor"
+                strokeWidth={1}
+                strokeLinejoin="round"
+                strokeDasharray={e.placeholder ? "2 1.5" : undefined}
+                className="fill-paper transition-[fill] duration-500 group-hover/entry:fill-moon/40"
+              />
+            </svg>
           )}
-          <p className="eyebrow text-mute">
-            {KIND[e.kind]}
-            {e.period && <> · {e.period}</>}
-            {e.current && <span className="text-accent"> · Current</span>}
-          </p>
-          <h3 className={cn("display mt-2 text-[clamp(1.7rem,2.6vw,2.2rem)] leading-[1.1]", e.placeholder && "text-mute")}>
-            {e.title}
-          </h3>
-          {e.org && <p className="mt-0.5">{e.org}</p>}
-          <p className="mt-2 max-w-xl leading-relaxed text-mute">{e.placeholder ? "More to come." : e.description}</p>
+
+          {/* Date column (sm and up) */}
+          <div className="hidden text-right sm:block">
+            {e.period && <p className="font-caps text-[0.8rem] leading-snug tracking-[0.08em] text-accent">{e.period}</p>}
+            {e.current && <p className="eyebrow mt-1 text-[0.6rem] text-moon">Current</p>}
+          </div>
+
+          <div>
+            <p className="eyebrow text-mute">
+              {KIND[e.kind]}
+              <span className="sm:hidden">
+                {e.period && <> · {e.period}</>}
+                {e.current && <span className="text-accent"> · Current</span>}
+              </span>
+            </p>
+            <h3 className={cn("display mt-2 text-[clamp(1.7rem,2.6vw,2.2rem)] leading-[1.1]", e.placeholder && "text-mute")}>
+              {e.title}
+            </h3>
+            {e.org && <p className="mt-1 text-[0.95rem] font-medium text-ink/85">{e.org}</p>}
+            <p className="mt-3 max-w-xl leading-relaxed text-mute">{e.placeholder ? "More to come." : e.description}</p>
+          </div>
         </motion.li>
       ))}
     </ol>

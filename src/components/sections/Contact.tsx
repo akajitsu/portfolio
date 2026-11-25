@@ -1,4 +1,4 @@
-import { Constellation } from "@/components/celestial/Constellation";
+import NorthStar from "@/components/celestial/NorthStar";
 import { Sparkle } from "@/components/celestial/Ornaments";
 import CopyEmail from "@/components/contact/CopyEmail";
 import FadeIn from "@/components/ui/FadeIn";
@@ -11,7 +11,7 @@ export default function Contact() {
   const hasEmail = /\S+@\S+\.\S+/.test(profile.email);
 
   return (
-    <section id="contact" aria-labelledby="contact-title" className="shell relative py-20 sm:py-28">
+    <section id="contact" aria-labelledby="contact-title" className="group/contact shell relative py-20 sm:py-28">
       <SectionHeading
         id="contact-title"
         index={7}
@@ -21,11 +21,6 @@ export default function Contact() {
       />
 
       <div className="relative mt-14 grid gap-12 lg:grid-cols-12">
-        <Constellation
-          points={[[8, 70], [26, 52], [40, 66], [58, 30], [78, 42], [92, 18]]}
-          edges={[[0, 1], [1, 2], [1, 3], [3, 4], [4, 5]]}
-          className="pointer-events-none absolute -top-28 right-0 hidden w-40 opacity-60 lg:block"
-        />
         <FadeIn className="lg:col-span-5">
           {hasEmail ? (
             <>
@@ -40,7 +35,8 @@ export default function Contact() {
               <div className="mt-6 flex flex-wrap gap-3">
                 <a
                   href={`mailto:${profile.email}`}
-                  className="inline-flex h-12 items-center gap-2 rounded-full bg-ink px-6 text-[0.9rem] font-medium tracking-[0.01em] text-paper shadow-[0_10px_30px_-14px_rgba(16,23,43,0.55)] transition-colors duration-500 hover:bg-accent dark:bg-accent dark:text-night dark:hover:bg-[#f0d9a6]"
+                  data-burst=""
+                  className="inline-flex h-12 items-center gap-2 rounded-full bg-[var(--btn-bg)] px-6 text-[0.9rem] font-medium tracking-[0.01em] text-[var(--btn-fg)] shadow-[0_10px_30px_-14px_var(--btn-shadow)] transition-[background-color,box-shadow] duration-500 hover:bg-[var(--btn-hover)] hover:shadow-[0_16px_38px_-12px_var(--btn-shadow)]"
                 >
                   <Mail size={16} /> Send an email
                 </a>
@@ -50,6 +46,8 @@ export default function Contact() {
           ) : (
             <p className="text-mute">Email coming soon.</p>
           )}
+          {/* The final section steers by the north star */}
+          <NorthStar className="pointer-events-none mt-16 hidden w-64 opacity-85 lg:block" />
         </FadeIn>
 
         <FadeIn delay={0.08} className="lg:col-span-7">
@@ -66,7 +64,7 @@ export default function Contact() {
                   >
                     <span className="display inline-flex items-center gap-2.5 text-[1.45rem] transition-colors group-hover:text-accent">
                       <Sparkle size={9} className="text-moon opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-                      {s.platform}
+                      <span className="link-gold">{s.platform}</span>
                     </span>
                     <span className="flex items-center gap-2 text-sm text-mute">
                       {s.handle}

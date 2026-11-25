@@ -100,11 +100,10 @@ export default function Navbar() {
           {/* Logo */}
           <Link
             href={isHome ? "#home" : "/"}
-            className="group flex items-center gap-2 font-display text-[1.75rem] font-medium leading-none tracking-[-0.01em]"
+            className="group flex h-10 w-10 items-center justify-center rounded-full"
             aria-label={`${profile.name} — home`}
           >
-            <EightStar size={15} className="text-moon transition-transform duration-700 ease-out-expo group-hover:rotate-45" />
-            {profile.shortName}
+            <EightStar size={20} className="text-moon transition-transform duration-700 ease-out-expo group-hover:rotate-45" />
           </Link>
 
           {/* Desktop links */}
@@ -118,11 +117,11 @@ export default function Navbar() {
                       href={hrefFor(item.id)}
                       aria-current={isActive ? "true" : undefined}
                       className={cn(
-                        "relative block px-3 py-2 text-[0.8125rem] font-medium tracking-[0.02em] transition-colors duration-300",
+                        "group relative block px-3 py-2 text-[0.8125rem] font-medium tracking-[0.02em] transition-colors duration-300",
                         isActive ? "text-ink" : "text-mute hover:text-accent",
                       )}
                     >
-                      {item.label}
+                      <span className="link-gold">{item.label}</span>
                     </a>
                     {isActive && (
                       <motion.span

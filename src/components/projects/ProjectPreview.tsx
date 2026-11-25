@@ -46,7 +46,7 @@ export default function ProjectPreview({ project, className, showPhone = true, p
   const body = (
     <>
       <motion.div style={{ y: windowY, rotateX, rotateY, transformPerspective: 1400 }}>
-        <div className="overflow-hidden rounded-[14px] border border-moon/35 bg-card shadow-[0_50px_90px_-50px_rgba(9,13,24,0.75)] transition-[transform,border-color] duration-700 ease-out-expo group-hover/preview:-translate-y-1 group-hover/preview:border-moon/70">
+        <div className="overflow-hidden rounded-[14px] border border-moon/35 bg-card shadow-[0_50px_90px_-50px_var(--shadow-deep)] transition-[transform,border-color] duration-700 ease-out-expo group-hover/preview:-translate-y-1 group-hover/preview:border-moon/70">
           {/* Browser chrome */}
           <div className="flex items-center gap-3 border-b border-moon/20 bg-paper-2 px-4 py-2.5">
             <div className="flex gap-1.5" aria-hidden="true">
@@ -78,7 +78,7 @@ export default function ProjectPreview({ project, className, showPhone = true, p
             {/* Light sweep */}
             <span
               aria-hidden="true"
-              className="pointer-events-none absolute inset-y-0 -left-1/3 w-1/3 -translate-x-full -skew-x-12 bg-linear-to-r from-transparent via-[#fff4d6]/25 to-transparent transition-transform duration-[1.3s] ease-out group-hover/preview:translate-x-[520%]"
+              className="pointer-events-none absolute inset-y-0 -left-1/3 w-1/3 -translate-x-full -skew-x-12 bg-linear-to-r from-transparent via-(--shimmer-hi)/25 to-transparent transition-transform duration-[1.3s] ease-out group-hover/preview:translate-x-[520%]"
             />
             {href && (
               <>
@@ -97,7 +97,7 @@ export default function ProjectPreview({ project, className, showPhone = true, p
 
       {phone && (
         <motion.div style={{ y: phoneY }} className="absolute -bottom-8 right-0 hidden w-[22%] min-w-[110px] sm:block">
-          <div className="rounded-[22px] border border-moon/45 bg-night p-[4px] shadow-[0_30px_50px_-25px_rgba(0,0,0,0.65)]">
+          <div className="rounded-[22px] border border-moon/45 bg-night p-[4px] shadow-[0_30px_50px_-25px_var(--shadow-deep)]">
             <div className="relative aspect-[390/844] overflow-hidden rounded-[18px] bg-black">
               <Image src={phone.src} alt={phone.alt} fill sizes="160px" className="object-cover object-top" />
             </div>

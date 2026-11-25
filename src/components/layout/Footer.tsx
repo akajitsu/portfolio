@@ -41,7 +41,7 @@ function Emblem() {
 export default function Footer() {
   const year = new Date().getFullYear();
   const liveSocials = socials.filter((s) => isUsableLink(s.href));
-  const linkCls = "text-sm text-mute transition-colors duration-300 hover:text-accent";
+  const linkCls = "link-gold text-sm text-mute transition-colors duration-300 hover:text-accent";
 
   return (
     <footer className="relative mt-16 overflow-x-clip">

@@ -1,4 +1,4 @@
-import Orrery from "@/components/celestial/Orrery";
+import ScrollCompass from "@/components/celestial/ScrollCompass";
 import Timeline from "@/components/journey/Timeline";
 import FadeIn from "@/components/ui/FadeIn";
 import SectionHeading from "@/components/ui/SectionHeading";
@@ -17,8 +17,11 @@ export default function Journey() {
 
         <FadeIn className="hidden lg:order-1 lg:col-span-4 lg:block">
           <div className="sticky top-28">
-            <Orrery className="w-full max-w-[320px] opacity-80" />
-            <a href="#certificates" className="group mt-8 inline-flex items-center gap-1.5 text-sm text-mute transition-colors hover:text-accent">
+            <ScrollCompass className="w-full max-w-[300px] opacity-85" />
+            <p aria-hidden="true" className="mt-5 max-w-[300px] text-center font-caps text-[0.62rem] tracking-[0.2em] text-faint uppercase">
+              Rosa ventorum · bearing true north
+            </p>
+            <a href="#certificates" className="link-gold group mt-8 inline-flex items-center gap-1.5 text-sm text-mute transition-colors hover:text-accent">
               Certificates
               <ArrowRight size={14} className="transition-transform duration-300 group-hover:translate-x-0.5" />
             </a>

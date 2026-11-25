@@ -65,7 +65,7 @@ export default function CertificateCard({
         href={href}
         target="_blank"
         rel="noopener noreferrer"
-        className={cn(cls, "hover:-translate-y-1 hover:border-moon/80 hover:shadow-[0_30px_60px_-40px_rgba(201,155,85,0.5)]")}
+        className={cn(cls, "hover:-translate-y-1 hover:border-moon/80 hover:shadow-[0_30px_60px_-40px_var(--shadow-deep)]")}
       >
         {body}
         <span className="sr-only"> (verification opens in a new tab)</span>

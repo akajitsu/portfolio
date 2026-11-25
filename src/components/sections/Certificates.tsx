@@ -19,7 +19,7 @@ export default function Certificates() {
         description="Courses and certifications I have completed."
         aside={
           certificates.length > 0 ? (
-            <Link href="/Certificates" className="group inline-flex items-center gap-1.5 text-sm text-mute transition-colors hover:text-accent">
+            <Link href="/Certificates" className="link-gold group inline-flex items-center gap-1.5 text-sm text-mute transition-colors hover:text-accent">
               All certificates
               <ArrowRight size={14} className="transition-transform duration-300 group-hover:translate-x-0.5" />
             </Link>

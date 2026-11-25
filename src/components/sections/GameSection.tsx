@@ -105,7 +105,7 @@ export default function GameSection({ category, index, limit, headingLevel: H = 
         <div className="flex items-center gap-4">
           <span
             aria-hidden="true"
-            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-moon/40 bg-paper/40 transition-[border-color,box-shadow] duration-700 group-hover/cat:border-moon group-hover/cat:shadow-[0_0_24px_-4px_rgba(228,197,139,0.45)]"
+            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-moon/40 bg-paper/40 transition-[border-color,box-shadow] duration-700 group-hover/cat:border-moon group-hover/cat:shadow-[0_0_24px_-4px_var(--text-glow)]"
           >
             <span className="flex" style={{ animation: symbol.float }}>
               {symbol.mark}

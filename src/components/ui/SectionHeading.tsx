@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import AnimatedRule from "@/components/celestial/AnimatedRule";
+import FlareStar from "@/components/celestial/FlareStar";
 import { roman } from "@/components/celestial/Ornaments";
 import Pendants from "@/components/celestial/Pendants";
 import FadeIn from "@/components/ui/FadeIn";
@@ -21,10 +22,23 @@ type Props = {
   eyebrow?: string;
 };
 
+const pad = (n: number) => String(n).padStart(2, "0");
+/**
+ * Chart coordinates for a plate number: decorative right ascension and
+ * declination, like the position notes in the margin of a star atlas.
+ * Deterministic, so every plate keeps its own address.
+ */
+function plateCoordinates(i: number) {
+  const ra = `${pad((i * 3 + 2) % 24)}h ${pad((i * 17 + 12) % 60)}m`;
+  const dec = `${i % 2 ? "+" : "−"}${pad((i * 11 + 8) % 80)}° ${pad((i * 23 + 6) % 60)}′`;
+  return `RA ${ra} · Dec ${dec}`;
+}
+
 /**
  * Section header in the style of a star-atlas plate: an animated triple-moon
- * rule with ornaments hanging from it, a numeral + engraved label, then the
- * serif title, whose letters rise out of a blur.
+ * rule with ornaments hanging from it, a star that flares as the section
+ * arrives, a numeral + engraved label with the plate's chart coordinates,
+ * then the serif title, whose letters rise out of a blur.
  */
 export default function SectionHeading({ title, description, aside, id, className, level = "h2", index, eyebrow }: Props) {
   const H = level;
@@ -37,10 +51,17 @@ export default function SectionHeading({ title, description, aside, id, classNam
 
       {(index || eyebrow) && (
         <FadeIn delay={0.05} y={10}>
-          <p className="eyebrow mt-6 flex items-center gap-3">
+          <p className="eyebrow mt-6 flex flex-wrap items-center gap-3">
+            {index && <FlareStar className="-mr-1" />}
             {index && <span className="text-sm text-moon">{roman(index)}</span>}
             {index && eyebrow && <span aria-hidden="true" className="h-px w-6 bg-moon/50" />}
             {eyebrow}
+            {index && (
+              <span aria-hidden="true" className="hidden font-sans text-[0.66rem] font-normal normal-case tracking-[0.06em] text-faint tabular-nums sm:inline">
+                <span className="mr-3 text-moon/60">·</span>
+                {plateCoordinates(index)}
+              </span>
+            )}
           </p>
         </FadeIn>
       )}

@@ -45,7 +45,7 @@ export default function GameCard({ game, id, active, markerX, handlers, variants
         <span
           aria-hidden="true"
           className={cn(
-            "pointer-events-none absolute -inset-x-3 inset-y-0.5 rounded-lg bg-[radial-gradient(closest-side,rgba(228,197,139,0.14),transparent)] transition-opacity duration-500",
+            "pointer-events-none absolute -inset-x-3 inset-y-0.5 rounded-lg bg-[radial-gradient(closest-side,var(--row-glow),transparent)] transition-opacity duration-500",
             active ? "opacity-100" : "opacity-0",
           )}
         />
@@ -54,7 +54,7 @@ export default function GameCard({ game, id, active, markerX, handlers, variants
             size={9}
             className={cn(
               "absolute top-1/2 -translate-y-1/2 transition-[color,scale,filter] duration-500 ease-out-expo",
-              active ? "scale-150 text-cream drop-shadow-[0_0_6px_rgba(236,213,163,0.9)]" : "text-moon/55",
+              active ? "scale-150 text-cream drop-shadow-[0_0_6px_var(--star-glow)]" : "text-moon/55",
             )}
             style={{ left: markerX }}
           />
@@ -62,7 +62,7 @@ export default function GameCard({ game, id, active, markerX, handlers, variants
         <span
           className={cn(
             "display min-w-0 truncate text-[1.22rem] leading-tight transition-[color,translate,text-shadow] duration-500 ease-out-expo",
-            active ? "-translate-y-px translate-x-1.5 text-accent [text-shadow:0_0_18px_rgba(228,197,139,0.45)]" : "text-ink",
+            active ? "-translate-y-px translate-x-1.5 text-accent [text-shadow:0_0_18px_var(--text-glow)]" : "text-ink",
           )}
         >
           {game.name}
@@ -84,7 +84,7 @@ export default function GameCard({ game, id, active, markerX, handlers, variants
           id={previewId}
           aria-hidden={!active}
           className={cn(
-            "pointer-events-none absolute bottom-[calc(100%-2px)] right-0 block w-[min(190px,62%)] origin-bottom-right rounded-[10px] border border-moon/60 bg-night p-[3px] shadow-[0_18px_40px_-18px_rgba(0,0,0,0.85),0_0_28px_-8px_rgba(228,197,139,0.45)] transition-[opacity,translate,scale] duration-500 ease-out-expo",
+            "pointer-events-none absolute bottom-[calc(100%-2px)] right-0 block w-[min(190px,62%)] origin-bottom-right rounded-[10px] border border-moon/60 bg-night p-[3px] shadow-[0_18px_40px_-18px_var(--shadow-deep),0_0_28px_-8px_var(--text-glow)] transition-[opacity,translate,scale] duration-500 ease-out-expo",
             active ? "translate-y-0 scale-100 opacity-100" : "translate-y-2 scale-95 opacity-0",
           )}
         >

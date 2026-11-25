@@ -36,12 +36,12 @@ const sheen =
   "overflow-hidden before:pointer-events-none before:absolute before:inset-y-0 before:-left-1/2 before:w-1/2 before:-skew-x-12 before:bg-linear-to-r before:from-transparent before:via-white/35 before:to-transparent before:-translate-x-full before:transition-transform before:duration-[900ms] before:ease-out hover:before:translate-x-[420%]";
 
 const variants: Record<Variant, string> = {
-  // Midnight ink by day, champagne gold by night.
+  // Antique gold by day, champagne gold by night (colours from the --btn-* theme tokens).
   primary:
     sheen +
-    " bg-ink text-paper shadow-[0_10px_30px_-14px_rgba(16,23,43,0.55)] hover:bg-accent dark:bg-accent dark:text-night dark:shadow-[0_10px_34px_-14px_rgba(228,197,139,0.45)] dark:hover:bg-[#f0d9a6]",
+    " bg-[var(--btn-bg)] text-[var(--btn-fg)] shadow-[0_10px_30px_-14px_var(--btn-shadow)] hover:bg-[var(--btn-hover)] hover:shadow-[0_16px_38px_-12px_var(--btn-shadow)]",
   // Minimal gold outline.
-  secondary: sheen + " border border-moon/55 bg-card/30 text-ink backdrop-blur hover:border-moon hover:bg-moon/10 hover:text-accent",
+  secondary: sheen + " border border-moon/55 bg-card/50 text-ink backdrop-blur hover:border-moon hover:bg-moon/10 hover:text-accent",
   ghost: "!px-3 text-ink hover:text-accent",
 };
 
@@ -57,6 +57,8 @@ function IconSlot({ children }: { children: ReactNode }) {
 export default function Button(props: AsLink | AsButton | AsDisabled) {
   const { children, variant = "primary", icon, className, size = "md" } = props;
   const cls = cn(base, sizes[size], variants[variant], className);
+  // Primary actions get a small burst of gold sparkles on click (see StarBurst).
+  const burst = variant === "primary" ? { "data-burst": "" } : {};
 
   if (props.disabled && "disabledLabel" in props) {
     return (
@@ -89,6 +91,7 @@ export default function Button(props: AsLink | AsButton | AsDisabled) {
         <a
           href={href}
           className={cls}
+          {...burst}
           {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
           {...(download ? { download: download === true ? "" : download } : {})}
         >
@@ -97,7 +100,7 @@ export default function Button(props: AsLink | AsButton | AsDisabled) {
       );
     }
     return (
-      <Link href={href} className={cls}>
+      <Link href={href} className={cls} {...burst}>
         {content}
       </Link>
     );
@@ -105,7 +108,7 @@ export default function Button(props: AsLink | AsButton | AsDisabled) {
 
   const { onClick, disabled, type = "button" } = props as AsButton;
   return (
-    <button type={type} onClick={onClick} disabled={disabled} className={cn(cls, "disabled:cursor-not-allowed disabled:opacity-50")}>
+    <button type={type} onClick={onClick} disabled={disabled} className={cn(cls, "disabled:cursor-not-allowed disabled:opacity-50")} {...burst}>
       {children}
       {icon && <IconSlot>{icon}</IconSlot>}
     </button>

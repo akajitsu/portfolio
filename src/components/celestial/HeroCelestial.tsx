@@ -243,7 +243,7 @@ export default function HeroCelestial({ src, alt, name, objectPosition = "50% 30
           initial={{ opacity: 0, scale: 0.82 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 1.4, ease, delay: 0.45 }}
-          className="group relative h-full w-full overflow-hidden rounded-full shadow-[0_0_0_3px_var(--foil-c),0_30px_60px_-25px_rgba(9,13,24,0.8)]"
+          className="group relative h-full w-full overflow-hidden rounded-full shadow-[0_0_0_3px_var(--foil-c),0_30px_60px_-25px_var(--shadow-deep)]"
         >
           {src ? (
             <Image
@@ -260,7 +260,7 @@ export default function HeroCelestial({ src, alt, name, objectPosition = "50% 30
               <span className="display text-6xl text-moon">{name.trim().charAt(0).toUpperCase()}</span>
             </div>
           )}
-          <span aria-hidden="true" className="absolute inset-[5px] rounded-full border border-[#fbe7a8]/45" />
+          <span aria-hidden="true" className="absolute inset-[5px] rounded-full border border-(--foil-a)/45" />
         </motion.div>
       </motion.div>
     </div>

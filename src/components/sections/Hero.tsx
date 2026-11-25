@@ -26,16 +26,18 @@ export default function Hero() {
 
       <div className="shell relative grid items-center gap-x-10 gap-y-14 lg:grid-cols-12">
         <div className="lg:col-span-7">
-          <FadeIn trigger="mount" y={8}>
-            <p className="eyebrow flex items-center gap-2.5">
-              <EightStar size={13} className="animate-twinkle text-moon [animation-duration:4s]" />
-              {profile.title}
-            </p>
-          </FadeIn>
+          {profile.title && (
+            <FadeIn trigger="mount" y={8}>
+              <p className="eyebrow flex items-center gap-2.5">
+                <EightStar size={13} className="animate-twinkle text-moon [animation-duration:4s]" />
+                {profile.title}
+              </p>
+            </FadeIn>
+          )}
 
           <RevealLines
             delay={0.1}
-            className="display mt-6 text-[clamp(2.9rem,6.4vw,5.6rem)] leading-[0.98]"
+            className={`display ${profile.title ? "mt-6" : ""} text-[clamp(2.9rem,6.4vw,5.6rem)] leading-[0.98]`}
             lines={[profile.greeting, ...profile.headline]}
             lineClassNames={[undefined, "italic font-normal text-shimmer pr-[0.08em]", "italic font-normal text-shimmer pr-[0.08em]"]}
           />
@@ -82,6 +84,10 @@ export default function Hero() {
             motto={profile.motto}
             className="max-w-[330px] sm:max-w-[400px] lg:max-w-[440px]"
           />
+          {/* Plate caption, as under an engraved figure */}
+          <p aria-hidden="true" className="mt-1 text-center font-caps text-[0.6rem] tracking-[0.24em] text-faint uppercase">
+            Fig. I · The observer
+          </p>
         </div>
       </div>
 

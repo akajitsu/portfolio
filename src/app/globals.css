@@ -3,29 +3,36 @@
 @custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
 
 /* ─── Design tokens: "Celestial Observatory" ──────────────────────────────────
-   Dark  — a midnight sky: navy surfaces, ivory type, cream-gold moons and
-           bronze suns (after the reference illustrations).
-   Light — an antique star chart: warm ivory paper, midnight ink, bronze.
+   Dark  — an observatory at midnight: navy surfaces, ivory type, cream-gold
+           moons and bronze suns (after the reference illustrations).
+   Light — an antique astronomical journal in morning light: parchment and
+           warm ivory, soft charcoal ink, antique gold and muted bronze.
    Token names are shared by both themes, so components never branch on theme.
 
    paper/paper-2/card  surfaces            ink/mute/faint  text, strongest → softest
    line                hairline borders    accent          interactive gold (AA on paper)
    moon                engraved gold lines cream           bright moons & sparkles
-   bronze              suns & bursts       night           always-dark navy        */
+   bronze              suns & bursts       night           always-dark navy
+
+   Effect tokens (plain CSS variables, below): --halo-*, --star-glow*, --text-glow,
+   --row-glow, --shadow-*, --btn-*, --selection-*. Components use these instead
+   of hard-coded colours, so glows and shadows suit each theme.
+
+   Light-mode contrast on paper (#f3efe5): ink 12.3:1 · mute 5.3:1 · accent 5.5:1 · button 4.9:1. */
 @theme {
   --color-paper: #f3efe5;
-  --color-paper-2: #ebe5d7;
-  --color-card: #f8f5ee;
-  --color-ink: #10172b;
-  --color-mute: #4f566b;
-  --color-faint: #8797b3;
-  --color-line: #ddd3bf;
+  --color-paper-2: #ece5d6;
+  --color-card: #f8f5ed;
+  --color-ink: #292b35;
+  --color-mute: #62616f;
+  --color-faint: #8d8778;
+  --color-line: #e6dcc7;
   --color-accent: #7a5a30;
   --color-accent-soft: #efe3cc;
-  --color-moon: #b8894a;
+  --color-moon: #98743f;
   --color-moon-soft: #f0d9a6;
-  --color-cream: #a5793c;
-  --color-bronze: #9c6d34;
+  --color-cream: #b49a70;
+  --color-bronze: #a07e4c;
   --color-lavender: #6e6390;
   --color-dusty: #8797b3;
   --color-night: #10172b;
@@ -51,22 +58,48 @@
   --animate-glow: glow-pulse 6s ease-in-out infinite;
 }
 
+/* Light: the journal by day. */
 :root {
   color-scheme: light;
-  --grain-opacity: 0.04;
-  --star-color: #7a6a52;
-  --star-opacity: 0.4;
-  --ornament-opacity: 0.32;
-  --glow-a: rgba(201, 155, 85, 0.16);
-  --glow-b: rgba(165, 154, 191, 0.14);
-  --cloud-fill: #fbf8f1;
-  --cloud-line: #8a7a5e;
-  --shimmer-hi: #c99b55;
-  --foil-a: #f3d98f;
-  --foil-b: #c99a3c;
-  --foil-c: #8a5f22;
+  --grain-opacity: 0.05;
+  --star-color: #8a7656;
+  --star-opacity: 0.3;
+  --ornament-opacity: 0.24;
+  /* sky layers: atmospheric washes, gold dust, cursor constellations, parchment */
+  --nebula-a: rgba(196, 164, 112, 0.17);
+  --nebula-b: rgba(160, 126, 76, 0.1);
+  --nebula-c: rgba(222, 204, 168, 0.32);
+  --dust: #a2814f;
+  --dust-opacity: 0.45;
+  --sky-line: rgba(138, 102, 52, 0.5);
+  --sky-halo: rgba(176, 138, 82, 0.32);
+  --meteor: #9a7a4a;
+  --parchment-opacity: 0.32;
+  --cloud-fill: #faf8f1;
+  --cloud-line: #a08c6a;
+  --shimmer-hi: #b08d58;
+  --foil-a: #ead7ad;
+  --foil-b: #b8945a;
+  --foil-c: #7f6033;
+  /* effects */
+  --halo-core: rgba(176, 138, 82, 0.24);
+  --halo-edge: rgba(176, 138, 82, 0.07);
+  --star-glow: rgba(152, 116, 63, 0.45);
+  --star-glow-soft: rgba(152, 116, 63, 0.22);
+  --text-glow: rgba(152, 116, 63, 0.16);
+  --row-glow: rgba(152, 116, 63, 0.08);
+  --shadow-soft: rgba(92, 72, 40, 0.16);
+  --shadow-deep: rgba(92, 72, 40, 0.26);
+  --btn-bg: #8a6634;
+  --btn-hover: #73552a;
+  --btn-fg: #faf8f1;
+  --btn-shadow: rgba(115, 85, 42, 0.38);
+  --selection-bg: #e6d3ad;
+  --vignette: rgba(150, 118, 70, 0.11);
+  --selection-fg: #292b35;
 }
 
+/* Dark: the observatory at midnight (unchanged values). */
 :root[data-theme="dark"] {
   color-scheme: dark;
   --color-paper: #10172b;
@@ -87,14 +120,37 @@
   --star-color: #f3efe5;
   --star-opacity: 0.85;
   --ornament-opacity: 0.3;
-  --glow-a: rgba(165, 154, 191, 0.09);
-  --glow-b: rgba(135, 151, 179, 0.1);
+  --nebula-a: rgba(82, 86, 168, 0.2);
+  --nebula-b: rgba(48, 68, 130, 0.3);
+  --nebula-c: rgba(165, 154, 191, 0.08);
+  --dust: #f0d9a6;
+  --dust-opacity: 0.6;
+  --sky-line: rgba(240, 217, 166, 0.42);
+  --sky-halo: rgba(240, 217, 166, 0.5);
+  --meteor: #f6e7c4;
+  --parchment-opacity: 0;
   --cloud-fill: #ece6d8;
   --cloud-line: #2a3350;
   --shimmer-hi: #fff4d6;
   --foil-a: #fbe7a8;
   --foil-b: #dcae4c;
   --foil-c: #9a6a26;
+  /* effects */
+  --halo-core: rgba(240, 217, 166, 0.5);
+  --halo-edge: rgba(201, 155, 85, 0.16);
+  --star-glow: rgba(240, 217, 166, 0.85);
+  --star-glow-soft: rgba(240, 217, 166, 0.45);
+  --text-glow: rgba(228, 197, 139, 0.45);
+  --row-glow: rgba(228, 197, 139, 0.14);
+  --shadow-soft: rgba(9, 13, 24, 0.55);
+  --shadow-deep: rgba(9, 13, 24, 0.75);
+  --btn-bg: #e4c58b;
+  --btn-hover: #f0d9a6;
+  --btn-fg: #10172b;
+  --btn-shadow: rgba(228, 197, 139, 0.45);
+  --selection-bg: #c99b55;
+  --vignette: transparent;
+  --selection-fg: #10172b;
 }
 
 @keyframes spin {
@@ -106,6 +162,40 @@
 @keyframes twinkle {
   0%, 100% { opacity: 1; transform: scale(1); }
   50% { opacity: 0.25; transform: scale(0.7); }
+}
+/* Distant stars: opacity only, and only a little. */
+@keyframes twinkle-soft {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+/* Visible stars that also turn a little as they dim. */
+@keyframes twinkle-turn {
+  0%, 100% { opacity: 1; transform: scale(1) rotate(0deg); }
+  50% { opacity: 0.35; transform: scale(0.72) rotate(30deg); }
+}
+/* Nebulae: a very slow wander and swell. */
+@keyframes nebula {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  33% { transform: translate3d(4%, -3%, 0) scale(1.07); }
+  66% { transform: translate3d(-3%, 2%, 0) scale(0.96); }
+}
+/* Gold dust: drifts toward (--dx, --dy) and back, brightening on the way. */
+@keyframes dust {
+  0%, 100% { transform: translate3d(0, 0, 0); opacity: 0.15; }
+  30% { opacity: 1; }
+  50% { transform: translate3d(var(--dx, 20px), var(--dy, -30px), 0); opacity: 0.55; }
+  75% { opacity: 0.9; }
+}
+/* Circumpolar stars turning a little around the pole star. */
+@keyframes circumpolar {
+  0%, 100% { transform: rotate(-7deg); }
+  50% { transform: rotate(7deg); }
+}
+/* A star that flares once when its section arrives. */
+@keyframes flare {
+  0% { opacity: 0; transform: scale(0.3) rotate(-60deg); }
+  45% { opacity: 1; transform: scale(1.45) rotate(0deg); }
+  100% { opacity: 1; transform: scale(1) rotate(0deg); }
 }
 @keyframes drift {
   0%, 100% { transform: translate3d(0, 0, 0); }
@@ -191,8 +281,8 @@
     overflow-x: clip;
   }
   ::selection {
-    background: var(--color-moon);
-    color: var(--color-night);
+    background: var(--selection-bg);
+    color: var(--selection-fg);
   }
   :focus-visible {
     outline: 1.5px solid var(--color-accent);
@@ -280,6 +370,59 @@ body::after {
 }
 
 @utility text-balance { text-wrap: balance; }
+
+/* A hairline of antique gold that draws in under a link on hover/focus. */
+@utility link-gold {
+  background-image: linear-gradient(var(--color-moon), var(--color-moon));
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 0% 1px;
+  padding-bottom: 2px;
+  transition: background-size 0.55s var(--ease-out-expo), color 0.3s ease;
+  &:hover, &:focus-visible, .group:hover & {
+    background-size: 100% 1px;
+  }
+}
+
+/* ─── Interactive sky (see SkyInteraction) ─────────────────────────────────
+   Stars near the pointer get data-near: their halo fades up and they swell.
+   Dust near the pointer is nudged aside with the independent `translate`
+   property, so it never fights the CSS drift animation. */
+.sky-halo {
+  opacity: 0;
+  transition: opacity 0.9s ease;
+}
+[data-near] > .sky-halo {
+  opacity: 1;
+  transition-duration: 0.35s;
+}
+.sky-core {
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: scale 0.9s var(--ease-out-expo);
+}
+[data-near] > .sky-core {
+  scale: 1.45;
+  transition-duration: 0.4s;
+}
+.sky-dust {
+  transition: translate 1.6s var(--ease-out-expo);
+}
+.sky-line {
+  transition: opacity 0.7s ease;
+}
+
+/* Theme switch: for a moment, every colour eases instead of snapping
+   (ThemeToggle adds this class for ~0.6s; other transitions pause meanwhile). */
+:root.theme-transition,
+:root.theme-transition *,
+:root.theme-transition *::before,
+:root.theme-transition *::after {
+  transition-property: background-color, border-color, color, fill, stroke, outline-color, text-decoration-color !important;
+  transition-duration: 0.55s !important;
+  transition-timing-function: ease !important;
+  transition-delay: 0s !important;
+}
 
 /* Decorative SVG strokes that draw themselves in. */
 .draw-in {

@@ -21,7 +21,12 @@ export default function ThemeToggle() {
 
   function toggle() {
     const next: Theme = theme === "dark" ? "light" : "dark";
-    document.documentElement.dataset.theme = next;
+    const root = document.documentElement;
+    // Ease every colour across the switch (see .theme-transition in globals.css).
+    root.classList.add("theme-transition");
+    window.clearTimeout(Number(root.dataset.themeTimer));
+    root.dataset.themeTimer = String(window.setTimeout(() => root.classList.remove("theme-transition"), 650));
+    root.dataset.theme = next;
     try {
       localStorage.setItem("theme", next);
     } catch {}
@@ -34,6 +39,7 @@ export default function ThemeToggle() {
     <button
       type="button"
       onClick={toggle}
+      data-burst=""
       aria-label={label}
       title={label}
       className="group relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-moon/35 bg-card/60 text-accent backdrop-blur transition-[border-color,box-shadow] duration-500 hover:border-moon hover:shadow-[0_0_0_4px_color-mix(in_oklab,var(--color-moon)_12%,transparent)]"

@@ -64,6 +64,8 @@ function starFacets(cx: number, cy: number, long: number, short: number, inner: 
 
 const STAR = starFacets(12, 12, 11, 6, 2);
 const STAR_G = starFacets(0, 0, 46, 24, 8);
+/** The eight-point star in the −50…50 glyph box: `solid` and `light` facet paths. */
+export const EIGHT_STAR_G = { solid: STAR_G.solid, light: STAR_G.light };
 
 export function EightStar({ size = 16, className, ...rest }: Svg) {
   return (
@@ -357,6 +359,213 @@ export function Cloud({ className, style }: { className?: string; style?: CSSPro
         <path d={arc(PUFFS[0][0], PUFFS[0][1], PUFFS[0][2] - 12, -50, 0)} strokeWidth={0.8} strokeDasharray="2 4" opacity={0.55} />
       </g>
     </svg>
+  );
+}
+
+// ─── Moon phases ─────────────────────────────────────────────────────────────
+
+/**
+ * The lit part of a moon of radius `r` at `phase` (0 = new, 0.25 = first
+ * quarter, 0.5 = full, 0.75 = last quarter). Northern-hemisphere view: the
+ * waxing moon is lit on the right. The terminator is a half-ellipse.
+ */
+export function moonPhasePath(cx: number, cy: number, r: number, phase: number) {
+  const p = ((phase % 1) + 1) % 1;
+  const rx = f(Math.abs(Math.cos(2 * Math.PI * p)) * r);
+  const top = `${cx} ${f(cy - r)}`;
+  const bottom = `${cx} ${f(cy + r)}`;
+  if (p <= 0.5) {
+    // Lit limb on the right (top → bottom, clockwise), terminator back up.
+    return `M${top}A${r} ${r} 0 0 1 ${bottom}A${rx} ${r} 0 0 ${p < 0.25 ? 0 : 1} ${top}Z`;
+  }
+  // Lit limb on the left (top → bottom, anticlockwise), terminator back up.
+  return `M${top}A${r} ${r} 0 0 0 ${bottom}A${rx} ${r} 0 0 ${p < 0.75 ? 0 : 1} ${top}Z`;
+}
+
+/** One moon phase: a hairline disc with its lit part filled. */
+export function MoonPhaseG({ phase, r = 40, className, style }: G & { phase: number; r?: number }) {
+  return (
+    <g className={className} style={style}>
+      <circle r={r} fill="currentColor" fillOpacity={0.08} stroke="currentColor" strokeWidth={1.4} strokeOpacity={0.55} />
+      {phase % 1 !== 0 && <path d={moonPhasePath(0, 0, r, phase)} fill="currentColor" />}
+    </g>
+  );
+}
+
+export function MoonPhase({ phase, size = 16, className, ...rest }: Svg & { phase: number }) {
+  return (
+    <svg {...svgProps(size, className, rest, "-44 -44 88 88")}>
+      <MoonPhaseG phase={phase} />
+    </svg>
+  );
+}
+
+// ─── Instruments ─────────────────────────────────────────────────────────────
+
+const ROSE_TICKS = Array.from({ length: 72 }, (_, i) => {
+  const deg = i * 5;
+  const long = deg % 30 === 0;
+  const [x1, y1] = polar(0, 0, 46, deg);
+  const [x2, y2] = polar(0, 0, long ? 40.5 : 43, deg);
+  return `M${x1} ${y1}L${x2} ${y2}`;
+}).join("");
+const ROSE_MAIN = starFacets(0, 0, 38, 24, 5.5, 8);
+const ROSE_MINOR = Array.from({ length: 8 }, (_, i) => {
+  const deg = i * 45 + 22.5;
+  const [tx, ty] = polar(0, 0, 21, deg);
+  const [ax, ay] = polar(0, 0, 4.5, deg - 12);
+  const [bx, by] = polar(0, 0, 4.5, deg + 12);
+  return `M${ax} ${ay}L${tx} ${ty}L${bx} ${by}`;
+}).join("");
+
+/**
+ * Engraved compass rose: a degree ring with 5° ticks, an eight-point star
+ * (cardinals long, intercardinals short) over eight hairline minor points,
+ * and the cardinal letters. 100×100 box centred on 0.
+ */
+export function CompassRoseG({ className, style, letters = true }: G & { letters?: boolean }) {
+  return (
+    <g className={className} style={style}>
+      <g fill="none" stroke="currentColor">
+        <circle r={47} strokeWidth={1.2} />
+        <circle r={40} strokeWidth={0.7} strokeOpacity={0.7} />
+        <path d={ROSE_TICKS} strokeWidth={0.6} strokeOpacity={0.75} />
+        <circle r={30} strokeWidth={0.5} strokeOpacity={0.5} strokeDasharray="1.5 2.5" />
+        <path d={ROSE_MINOR} strokeWidth={0.8} strokeOpacity={0.8} strokeLinejoin="round" />
+      </g>
+      <path d={ROSE_MAIN.solid} fill="currentColor" />
+      <path d={ROSE_MAIN.light} fill="currentColor" opacity={0.35} />
+      <circle r={3.2} style={{ fill: "var(--color-paper)" }} stroke="currentColor" strokeWidth={1} />
+      {letters && (
+        <g fill="currentColor" style={{ fontFamily: "var(--font-caps)" }} fontSize={6.5} textAnchor="middle" dominantBaseline="central">
+          <text y={-52}>N</text>
+          <text x={53}>E</text>
+          <text y={53}>S</text>
+          <text x={-53}>W</text>
+        </g>
+      )}
+    </g>
+  );
+}
+
+export function CompassRose({ size = 120, className, letters, ...rest }: Svg & { letters?: boolean }) {
+  return (
+    <svg {...svgProps(size, className, rest, "-60 -60 120 120")}>
+      <CompassRoseG letters={letters} />
+    </svg>
+  );
+}
+
+const ECLIPSE_RAYS = rays(0, 0, 25, 47, 36, 4, 24);
+
+/** Sun and moon together: a rayed sun with the moon's crescent crossing its face. */
+export function SunMoonG({ className, style }: G) {
+  return (
+    <g className={className} style={style}>
+      <g className="origin-self animate-spin-slower">
+        <path d={ECLIPSE_RAYS} fill="currentColor" opacity={0.85} />
+      </g>
+      <circle r={22} fill="none" stroke="currentColor" strokeWidth={1.6} />
+      <circle r={18} fill="currentColor" opacity={0.18} />
+      <path d={crescentPath(0, 0, 18, 8, 15, 300)} fill="currentColor" />
+    </g>
+  );
+}
+
+/** Orbital diagram: two tilted elliptical orbits around a small sun. */
+export function OrbitG({ className, style }: G) {
+  return (
+    <g className={className} style={style} fill="none" stroke="currentColor">
+      <circle r={46} strokeWidth={0.6} strokeOpacity={0.5} strokeDasharray="1 3.5" />
+      <g className="origin-self animate-spin-slow">
+        <ellipse rx={44} ry={15} strokeWidth={1} transform="rotate(-28)" />
+        <circle cx={38.4} cy={-7.6} r={3.2} fill="currentColor" stroke="none" transform="rotate(-28)" />
+      </g>
+      <g className="origin-self animate-spin-reverse">
+        <ellipse rx={30} ry={11} strokeWidth={0.9} strokeOpacity={0.8} transform="rotate(34)" />
+        <circle cx={-29} cy={2.6} r={2.2} fill="currentColor" stroke="none" transform="rotate(34)" />
+      </g>
+      <circle r={6} fill="currentColor" stroke="none" />
+      <circle r={9.5} strokeWidth={0.7} strokeOpacity={0.7} />
+    </g>
+  );
+}
+
+// ─── Constellations ──────────────────────────────────────────────────────────
+
+/**
+ * Real asterisms, simplified, in a 100×100 box (north up). `mag` sets the
+ * relative brightness of each star (1 = brightest).
+ */
+export type Asterism = { name: string; stars: { x: number; y: number; mag: number; name?: string }[]; lines: [number, number][] };
+
+export const URSA_MINOR: Asterism = {
+  name: "Ursa Minor",
+  // Polaris at the tip of the handle, then Yildun, ε, ζ, η, Pherkad (γ) and Kochab (β).
+  stars: [
+    { x: 14, y: 12, mag: 1, name: "Polaris" },
+    { x: 26, y: 26, mag: 3 },
+    { x: 36, y: 40, mag: 3 },
+    { x: 50, y: 52, mag: 2.6 },
+    { x: 54, y: 72, mag: 3 },
+    { x: 80, y: 80, mag: 2.2 },
+    { x: 78, y: 58, mag: 1.6 },
+  ],
+  lines: [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 3]],
+};
+
+export const CASSIOPEIA: Asterism = {
+  name: "Cassiopeia",
+  // The "W": Caph, Schedar, Navi (γ), Ruchbah, Segin.
+  stars: [
+    { x: 8, y: 30, mag: 1.8 },
+    { x: 28, y: 62, mag: 1.4 },
+    { x: 50, y: 40, mag: 1.6 },
+    { x: 70, y: 62, mag: 2.2 },
+    { x: 92, y: 42, mag: 2.6 },
+  ],
+  lines: [[0, 1], [1, 2], [2, 3], [3, 4]],
+};
+
+export const LYRA: Asterism = {
+  name: "Lyra",
+  // Vega, then ε/ζ and the parallelogram (δ, γ, β).
+  stars: [
+    { x: 40, y: 10, mag: 0.8, name: "Vega" },
+    { x: 58, y: 18, mag: 3 },
+    { x: 48, y: 34, mag: 2.6 },
+    { x: 62, y: 46, mag: 2.8 },
+    { x: 52, y: 84, mag: 2 },
+    { x: 34, y: 74, mag: 2.2 },
+  ],
+  lines: [[0, 1], [0, 2], [1, 2], [2, 3], [3, 4], [4, 5], [5, 2]],
+};
+
+/** Star radius from magnitude: brighter stars are drawn larger. */
+const magR = (mag: number) => f(Math.max(0.9, 3.4 - mag * 0.85));
+
+/** A constellation figure as a bare <g> (100×100 box): hairline lines, sized stars. */
+export function AsterismG({
+  asterism,
+  className,
+  style,
+  lineOpacity = 0.55,
+  linesClassName,
+}: G & { asterism: Asterism; lineOpacity?: number; linesClassName?: string }) {
+  const s = asterism.stars;
+  return (
+    <g className={className} style={style}>
+      <g stroke="currentColor" strokeWidth={0.6} strokeOpacity={lineOpacity} fill="none" className={linesClassName}>
+        {asterism.lines.map(([a, b], i) => (
+          <path key={i} d={`M${s[a].x} ${s[a].y}L${s[b].x} ${s[b].y}`} />
+        ))}
+      </g>
+      <g fill="currentColor">
+        {s.map((st, i) => (
+          <circle key={i} cx={st.x} cy={st.y} r={magR(st.mag)} />
+        ))}
+      </g>
+    </g>
   );
 }
 

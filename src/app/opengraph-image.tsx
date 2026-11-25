@@ -43,7 +43,7 @@ export default function OpengraphImage() {
           </div>
           <div style={{ fontSize: 40, marginTop: 20, color: "#e4c58b", fontStyle: "italic" }}>{profile.headline.join(" ")}</div>
         </div>
-        <div style={{ display: "flex", fontSize: 24, color: "#b9b9c1" }}>{profile.title}</div>
+        <div style={{ display: "flex", fontSize: 24, color: "#b9b9c1" }}>{profile.title || profile.tagline}</div>
       </div>
     ),
     size,

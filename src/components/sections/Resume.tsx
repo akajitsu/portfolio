@@ -33,11 +33,12 @@ export default function Resume() {
                   ))}
               </dl>
               <div className="mt-8 flex flex-wrap gap-3">
-                <Button href={resume.href} external icon={<Eye size={16} />}>
-                  View resume
-                </Button>
-                <Button href={resume.href} download={resume.downloadName} variant="secondary" icon={<Download size={15} />}>
+                {/* Download is the main action; viewing stays available beside it. */}
+                <Button href={resume.href} download={resume.downloadName} icon={<Download size={16} />}>
                   Download PDF
+                </Button>
+                <Button href={resume.href} external variant="secondary" icon={<Eye size={16} />}>
+                  View resume
                 </Button>
               </div>
             </>
@@ -64,26 +65,33 @@ export default function Resume() {
 
         <FadeIn delay={0.1} className="lg:col-span-7">
           {resume.available ? (
-            <div className="relative rounded-[18px] border border-moon/35 bg-card/70 p-2.5">
-              <Corners inset="5px" />
-              <div className="overflow-hidden rounded-[12px] border border-moon/20">
-                <div className="flex items-center justify-between border-b border-moon/20 bg-paper-2 px-4 py-3 text-sm">
-                  <span className="flex min-w-0 items-center gap-2">
-                    <FileText size={15} className="shrink-0 text-moon" />
-                    <span className="truncate">{resume.downloadName}</span>
-                  </span>
-                  <EightStar size={12} className="shrink-0 text-moon" />
+            <>
+              <div className="relative rounded-[18px] border border-moon/35 bg-card p-2.5 shadow-[0_40px_80px_-50px_var(--shadow-deep)]">
+                <Corners inset="5px" />
+                <div className="overflow-hidden rounded-[12px] border border-moon/20">
+                  <div className="flex items-center justify-between border-b border-moon/20 bg-paper-2 px-4 py-3 text-sm">
+                    <span className="flex min-w-0 items-center gap-2">
+                      <FileText size={15} className="shrink-0 text-moon" />
+                      <span className="truncate">{resume.downloadName}</span>
+                    </span>
+                    <EightStar size={12} className="shrink-0 text-moon" />
+                  </div>
+                  {/* Inline PDF viewers are unreliable on phones — show a note there instead. */}
+                  <iframe
+                    src={`${resume.href}#view=FitH&toolbar=0`}
+                    title={`${profile.name}'s resume`}
+                    loading="lazy"
+                    className="hidden aspect-[8.5/11] w-full bg-white md:block"
+                  />
+                  <p className="p-5 text-sm text-mute md:hidden">Open the PDF to read it on your phone.</p>
                 </div>
-                {/* Inline PDF viewers are unreliable on phones — show a note there instead. */}
-                <iframe
-                  src={`${resume.href}#view=FitH&toolbar=0`}
-                  title={`${profile.name}'s resume`}
-                  loading="lazy"
-                  className="hidden aspect-[8.5/11] w-full bg-white md:block"
-                />
-                <p className="p-5 text-sm text-mute md:hidden">Open the PDF to read it on your phone.</p>
               </div>
-            </div>
+              {/* Archive caption, like the label under a filed plate */}
+              <p aria-hidden="true" className="mt-3 flex justify-between gap-4 px-1 font-caps text-[0.6rem] tracking-[0.2em] text-faint uppercase">
+                <span>Plate V · Curriculum vitae</span>
+                {resume.lastUpdated && <span>Archived {resume.lastUpdated}</span>}
+              </p>
+            </>
           ) : (
             <div className="relative flex aspect-[4/3] flex-col items-center justify-center rounded-[18px] border border-dashed border-moon/40 text-center sm:aspect-[16/9]">
               <FileText size={28} className="text-moon" />

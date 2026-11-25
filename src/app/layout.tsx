@@ -5,7 +5,9 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import Intro from "@/components/celestial/Intro";
 import SparkleTrail from "@/components/celestial/SparkleTrail";
+import StarBurst from "@/components/celestial/StarBurst";
 import Starfield from "@/components/celestial/Starfield";
+import BackToTop from "@/components/ui/BackToTop";
 import { profile } from "@/data/profile";
 import "./globals.css";
 
@@ -86,6 +88,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Intro />
         <Providers>
           <SparkleTrail />
+          <StarBurst />
           {/* `isolate` keeps the fixed starfield behind content but above the page background. */}
           <div className="relative isolate">
             <Starfield />
@@ -94,6 +97,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               {children}
             </main>
             <Footer />
+            <BackToTop />
           </div>
         </Providers>
       </body>

@@ -8,14 +8,15 @@ export const profile = {
   name: "Jared",
   /** Used in the logo, footer and page titles. */
   shortName: "Jared",
-  title: "2nd year BSIT student",
+  /** Small line above the hero greeting. Leave "" to hide it. */
+  title: "",
 
   /** Hero copy. `headline` lines are rendered as separate lines in the hero. */
   greeting: "Hi, I'm Jared.",
   headline: ["Developer, creator", "& problem solver."],
   tagline: "Building digital experiences through code, creativity, and experimentation.",
   intro:
-    "I'm a BSIT student learning programming and web development. I know the basics of C++, Java, JavaScript, HTML and CSS, and I'm building my first projects.",
+    "I'm learning programming and web development. I know the basics of C++, Java, JavaScript, HTML and CSS, and I'm building my first projects.",
 
   /**
    * Engraved along the top of the hero arch (from the reference illustration):
@@ -24,7 +25,7 @@ export const profile = {
   motto: "Per ardua ad astra",
 
   /** Rotating words after "I'm a / an …" in the hero. */
-  roles: ["Web Developer", "Frontend Developer", "BSIT Student", "Creative Developer", "Problem Solver"],
+  roles: ["Web Developer", "Frontend Developer", "Creative Developer", "Problem Solver"],
 
   /**
    * Profile photo. Put your image in /public/images/profile/ and set `src`,
@@ -45,7 +46,7 @@ export const profile = {
     "Outside of school, I game a lot. I have played everything from big popular titles to small indie games, and I enjoy story-heavy games, tough bosses, and games made with RPG Maker.",
 
   /** Opening sentence of the About section, shown larger. */
-  aboutLead: "I'm a second-year BSIT student learning to build for the web. I'm also a lifelong gamer.",
+  aboutLead: "I'm learning to build for the web. I'm also a lifelong gamer.",
 
   /** Short true facts shown as a list in the About section. */
   quickFacts: [
@@ -62,7 +63,7 @@ export const profile = {
   aboutBlocks: [
     {
       label: "Background",
-      body: "I'm currently in my second year of BSIT, learning programming and web development. Before and alongside school, I ran a small laptop-selling business on Facebook Marketplace for four years.",
+      body: "I'm currently learning programming and web development. Before and alongside school, I ran a small laptop-selling business on Facebook Marketplace for four years.",
     },
     {
       label: "Interests",
