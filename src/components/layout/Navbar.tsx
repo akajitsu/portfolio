@@ -93,7 +93,7 @@ export default function Navbar() {
       <header
         className={cn(
           "fixed inset-x-0 top-0 z-50 transition-[background-color,backdrop-filter] duration-500",
-          scrolled ? "bg-paper/75 backdrop-blur-xl" : "bg-transparent",
+          scrolled ? "bg-paper/92" : "bg-transparent",
         )}
       >
         <div className="shell flex h-[4.5rem] items-center justify-between gap-4">
@@ -118,7 +118,7 @@ export default function Navbar() {
                       aria-current={isActive ? "true" : undefined}
                       className={cn(
                         "group relative block px-3 py-2 text-[0.8125rem] font-medium tracking-[0.02em] transition-colors duration-300",
-                        isActive ? "text-ink" : "text-mute hover:text-accent",
+                        isActive ? "text-ink" : "text-mute hover:text-accent hover:[text-shadow:0_0_14px_var(--text-glow)]",
                       )}
                     >
                       <span className="link-gold">{item.label}</span>
@@ -127,10 +127,10 @@ export default function Navbar() {
                       <motion.span
                         layoutId="nav-active"
                         aria-hidden="true"
-                        className="absolute -bottom-1 left-1/2 flex -translate-x-1/2 text-moon"
+                        className="absolute -bottom-1 left-1/2 flex -translate-x-1/2 text-moon drop-shadow-[0_0_5px_var(--star-glow)]"
                         transition={{ type: "spring", stiffness: 380, damping: 32 }}
                       >
-                        <Sparkle size={9} />
+                        <Sparkle size={9} className="animate-twinkle [animation-duration:4.5s]" />
                       </motion.span>
                     )}
                   </li>
@@ -148,7 +148,7 @@ export default function Navbar() {
               aria-expanded={open}
               aria-controls="mobile-menu"
               aria-label={open ? "Close menu" : "Open menu"}
-              className="relative flex h-10 w-10 items-center justify-center rounded-full border border-moon/35 bg-card/60 backdrop-blur transition-colors hover:border-moon lg:hidden"
+              className="relative flex h-10 w-10 items-center justify-center rounded-full border border-moon/35 bg-card/85 transition-colors hover:border-moon lg:hidden"
             >
               <span className="sr-only">Menu</span>
               <span

@@ -28,13 +28,11 @@ export default function Certificates() {
       />
 
       {shown.length > 0 ? (
-        <FadeIn className="mt-14">
-          <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {shown.map((c, i) => (
-              <CertificateCard key={`${c.title}-${i}`} certificate={c} />
-            ))}
-          </ul>
-        </FadeIn>
+        <ul className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {shown.map((c, i) => (
+            <CertificateCard key={`${c.title}-${i}`} certificate={c} index={i} />
+          ))}
+        </ul>
       ) : (
         <FadeIn className="mt-14">
           <CertificateArchiveEmpty />

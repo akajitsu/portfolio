@@ -32,6 +32,12 @@ export default function Timeline({ entries }: { entries: TimelineEntry[] }) {
   return (
     <ol ref={ref} className="relative">
       <span aria-hidden="true" className={cn(line, "bg-moon/20")} />
+      {/* Graduations: a tick every 28px, like the scale on an instrument */}
+      <span
+        aria-hidden="true"
+        className="absolute bottom-2 left-[3px] top-2 w-[9px] opacity-45 sm:left-[calc(8.25rem-4px)]"
+        style={{ backgroundImage: "repeating-linear-gradient(to bottom, var(--color-moon) 0 1px, transparent 1px 28px)" }}
+      />
       <motion.span aria-hidden="true" style={{ scaleY }} className={cn(line, "origin-top bg-linear-to-b from-moon to-accent")} />
 
       {entries.map((e, i) => (
@@ -43,13 +49,35 @@ export default function Timeline({ entries }: { entries: TimelineEntry[] }) {
           transition={{ duration: 0.7, ease }}
           className="group/entry relative pb-14 pl-10 last:pb-0 sm:grid sm:grid-cols-[7rem_1fr] sm:gap-x-10 sm:pl-0"
         >
-          {/* Marker: a twinkling star for the current entry, an engraved compass point otherwise */}
+          {/* Arrival: a ring of light opens around the milestone as it comes into view */}
+          <motion.span
+            aria-hidden="true"
+            initial={{ opacity: 0, scale: 0.4 }}
+            whileInView={{ opacity: [0, 0.8, 0], scale: [0.4, 2.6] }}
+            viewport={inViewOnce}
+            transition={{ duration: 1.3, delay: 0.25, ease: "easeOut" }}
+            className="pointer-events-none absolute left-[0.5px] top-[0.2rem] h-[14px] w-[14px] rounded-full border border-moon bg-[radial-gradient(closest-side,var(--halo-core),transparent)] sm:left-[calc(8.25rem-7px)]"
+          />
+
+          {/* Marker: a twinkling star for the current entry, an engraved compass point otherwise.
+              Each one lights up as it arrives. */}
           {e.current ? (
-            <span aria-hidden="true" className="absolute -left-[2px] top-[0.05rem] flex rounded-full bg-paper p-[1px] text-moon sm:left-[calc(8.25rem-10px)]">
+            <motion.span
+              aria-hidden="true"
+              initial={{ opacity: 0.3, scale: 0.6 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={inViewOnce}
+              transition={{ duration: 0.9, delay: 0.2, ease }}
+              className="absolute -left-[2px] top-[0.05rem] flex rounded-full bg-paper p-[1px] text-moon drop-shadow-[0_0_7px_var(--star-glow-soft)] sm:left-[calc(8.25rem-10px)]"
+            >
               <EightStar size={18} className="animate-twinkle [animation-duration:5s]" />
-            </span>
+            </motion.span>
           ) : (
-            <svg
+            <motion.svg
+              initial={{ opacity: 0.3 }}
+              whileInView={{ opacity: 1 }}
+              viewport={inViewOnce}
+              transition={{ duration: 0.9, delay: 0.2, ease }}
               aria-hidden="true"
               viewBox="0 0 14 14"
               className={cn(
@@ -65,7 +93,7 @@ export default function Timeline({ entries }: { entries: TimelineEntry[] }) {
                 strokeDasharray={e.placeholder ? "2 1.5" : undefined}
                 className="fill-paper transition-[fill] duration-500 group-hover/entry:fill-moon/40"
               />
-            </svg>
+            </motion.svg>
           )}
 
           {/* Date column (sm and up) */}

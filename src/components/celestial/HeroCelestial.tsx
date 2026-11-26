@@ -2,7 +2,7 @@
 import Image from "next/image";
 import { motion, useMotionValue, useReducedMotion, useSpring, useTransform } from "motion/react";
 import { useRef, type CSSProperties, type ReactNode } from "react";
-import { Cloud, CompassG, DoubleCrescentG, SPARKLE_G, polar } from "@/components/celestial/Ornaments";
+import { CompassG, DoubleCrescentG, SPARKLE_G, polar } from "@/components/celestial/Ornaments";
 import { ease } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 
@@ -55,6 +55,16 @@ const SPARKLES = [
 
 const loop = (name: string, dur: number, delay = 0): CSSProperties => ({ animation: `${name} ${dur}s ease-in-out ${delay}s infinite` });
 
+/** Place a w×h box (composition units) centred on (x, y) in the 520×680 composition. */
+const at = (x: number, y: number, w: number, h = w): CSSProperties => ({
+  left: `${((x - w / 2) / 520) * 100}%`,
+  top: `${((y - h / 2) / 680) * 100}%`,
+  width: `${(w / 520) * 100}%`,
+  height: `${(h / 680) * 100}%`,
+});
+/** The sun's centre as a CSS transform-origin within the composition box. */
+const SUN_ORIGIN = `50% ${(CY / 680) * 100}%`;
+
 function PendantEnd({ end, x, y }: { end: End; x: number; y: number }): ReactNode {
   switch (end) {
     case "sparkle":
@@ -99,133 +109,144 @@ export default function HeroCelestial({ src, alt, name, objectPosition = "50% 30
     rawY.set(0);
   }
 
-  const origin = { transformOrigin: `${CX}px ${CY}px` };
-
   return (
     <div ref={ref} onPointerMove={onMove} onPointerLeave={onLeave} className={cn("relative mx-auto aspect-[520/680] w-full", className)}>
-      <motion.svg
-        viewBox="0 0 520 680"
-        aria-hidden="true"
-        focusable="false"
-        style={{ x: backX, y: backY }}
-        className="absolute inset-0 h-full w-full overflow-visible text-moon"
-      >
-        <defs>
-          <radialGradient id="hero-foil" cx="42%" cy="38%" r="70%">
-            <stop offset="0%" stopColor="var(--foil-a)" />
-            <stop offset="55%" stopColor="var(--foil-b)" />
-            <stop offset="100%" stopColor="var(--foil-c)" />
-          </radialGradient>
-          <radialGradient id="hero-glow">
-            <stop offset="0%" stopColor="var(--foil-a)" stopOpacity="0.45" />
-            <stop offset="100%" stopColor="var(--foil-a)" stopOpacity="0" />
-          </radialGradient>
-          <path id="hero-motto-arc" d={`M${polar(260, 260, 238, -64).join(" ")}A238 238 0 0 1 ${polar(260, 260, 238, 64).join(" ")}`} />
-        </defs>
+      {/* Back plane: leans away from the pointer. Everything that moves forever
+          here is its own small layer animated on the GPU (transform/opacity),
+          so the large drawing underneath is painted once and never repainted. */}
+      <motion.div aria-hidden="true" style={{ x: backX, y: backY }} className="pointer-events-none absolute inset-0">
+        {/* Sun glow, breathing */}
+        <div
+          className="animate-glow absolute rounded-full"
+          style={{ ...at(CX, CY, 400), background: "radial-gradient(closest-side, color-mix(in oklab, var(--foil-a) 45%, transparent), transparent)" }}
+        />
 
-        {/* Arch */}
-        <g fill="none" stroke="currentColor" strokeLinecap="round">
-          <path d="M40 676V260A220 220 0 0 1 480 260V676" strokeWidth="1.2" pathLength={1} className="draw-in" />
-          <path
-            d="M54 676V260A206 206 0 0 1 466 260V676"
-            strokeWidth="0.7"
-            strokeDasharray="2 6"
-            opacity="0.55"
-            style={{ animation: "fade-in 1.4s ease 1.4s both" }}
-          />
-        </g>
-
-        {/* Motto */}
-        {motto && (
-          <text
-            className="fill-cream"
-            style={{ fontFamily: "var(--font-caps)", fontSize: 15, letterSpacing: "0.42em", animation: "fade-in 1.8s ease 1.2s both" }}
-          >
-            <textPath href="#hero-motto-arc" startOffset="50%" textAnchor="middle">
-              {motto.toUpperCase()}
-            </textPath>
-          </text>
-        )}
-
-        {/* Sun: glow, counter-turning rays, foil disc, rings */}
-        <circle cx={CX} cy={CY} r={200} fill="url(#hero-glow)" className="animate-glow" style={origin} />
-        <motion.g
+        {/* Counter-turning rays: two full-size layers rotating about the sun */}
+        <motion.div
           initial={{ scale: 0.55, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 1.8, ease, delay: 0.25 }}
-          style={{ transformBox: "fill-box", transformOrigin: "50% 50%" }}
+          className="absolute inset-0"
+          style={{ transformOrigin: SUN_ORIGIN }}
         >
-          <g className="animate-spin-slow" style={origin}>
+          <svg viewBox="0 0 520 680" className="animate-spin-slow absolute inset-0 h-full w-full overflow-visible text-moon" style={{ transformOrigin: SUN_ORIGIN }}>
             <path d={FINE_RAYS} stroke="currentColor" strokeWidth="0.9" strokeLinecap="round" opacity="0.85" />
-          </g>
-          <g className="animate-spin-reverse" style={origin}>
-            <path d={BOLD_RAYS} fill="currentColor" className="text-bronze" />
-          </g>
-        </motion.g>
-        <circle cx={CX} cy={CY} r={118} fill="url(#hero-foil)" />
-        <circle cx={CX} cy={CY} r={124} fill="none" stroke="currentColor" strokeWidth="1" />
-        <circle cx={CX} cy={CY} r={131} fill="none" stroke="currentColor" strokeWidth="1.4" strokeDasharray="0.5 6" strokeLinecap="round" />
+          </svg>
+          <svg viewBox="0 0 520 680" className="animate-spin-reverse absolute inset-0 h-full w-full overflow-visible text-bronze" style={{ transformOrigin: SUN_ORIGIN }}>
+            <path d={BOLD_RAYS} fill="currentColor" />
+          </svg>
+        </motion.div>
 
-        {/* Crescents above and below */}
-        {/* (Position on the outer group; the CSS entrance + float go on the inner one.) */}
-        <g transform="translate(260 90) scale(0.62)" className="text-cream">
-          <g style={{ animation: "rise-in 1.4s cubic-bezier(.22,1,.36,1) 0.6s both" }}>
-            <DoubleCrescentG deg={180} className="origin-self" style={loop("float-y", 8)} />
-          </g>
-        </g>
-        <g transform="translate(260 584) scale(0.62)" className="text-cream">
-          <g style={{ animation: "rise-in 1.4s cubic-bezier(.22,1,.36,1) 0.8s both" }}>
-            <DoubleCrescentG deg={0} className="origin-self" style={loop("float-y", 9, -3)} />
-          </g>
-        </g>
+        {/* The still drawing: arch, motto, foil disc and rings. The arch's legs
+            fade out softly toward the bottom rather than stopping at the edge. */}
+        <svg
+          viewBox="0 0 520 680"
+          focusable="false"
+          className="absolute inset-0 h-full w-full overflow-visible text-moon"
+          style={{ maskImage: "linear-gradient(to bottom, #000 80%, transparent 99%)" }}
+        >
+          <defs>
+            <radialGradient id="hero-foil" cx="42%" cy="38%" r="70%">
+              <stop offset="0%" stopColor="var(--foil-a)" />
+              <stop offset="55%" stopColor="var(--foil-b)" />
+              <stop offset="100%" stopColor="var(--foil-c)" />
+            </radialGradient>
+            <path id="hero-motto-arc" d={`M${polar(260, 260, 238, -64).join(" ")}A238 238 0 0 1 ${polar(260, 260, 238, 64).join(" ")}`} />
+          </defs>
 
-        {/* Hanging stars */}
+          {/* Arch */}
+          <g fill="none" stroke="currentColor" strokeLinecap="round">
+            <path d="M40 676V260A220 220 0 0 1 480 260V676" strokeWidth="1.2" pathLength={1} className="draw-in" />
+            <path
+              d="M54 676V260A206 206 0 0 1 466 260V676"
+              strokeWidth="0.7"
+              strokeDasharray="2 6"
+              opacity="0.55"
+              style={{ animation: "fade-in 1.4s ease 1.4s both" }}
+            />
+          </g>
+
+          {/* Motto */}
+          {motto && (
+            <text
+              className="fill-cream"
+              style={{ fontFamily: "var(--font-caps)", fontSize: 15, letterSpacing: "0.42em", animation: "fade-in 1.8s ease 1.2s both" }}
+            >
+              <textPath href="#hero-motto-arc" startOffset="50%" textAnchor="middle">
+                {motto.toUpperCase()}
+              </textPath>
+            </text>
+          )}
+
+          {/* Foil disc and rings */}
+          <circle cx={CX} cy={CY} r={118} fill="url(#hero-foil)" />
+          <circle cx={CX} cy={CY} r={124} fill="none" stroke="currentColor" strokeWidth="1" />
+          <circle cx={CX} cy={CY} r={131} fill="none" stroke="currentColor" strokeWidth="1.4" strokeDasharray="0.5 6" strokeLinecap="round" />
+        </svg>
+
+        {/* Crescents above and below: rise in, then float */}
+        {[
+          { y: 90, deg: 180, dur: 8, delay: 0, enter: 0.6 },
+          { y: 584, deg: 0, dur: 9, delay: -3, enter: 0.8 },
+        ].map((c) => (
+          <div key={c.y} className="absolute text-cream" style={{ ...at(CX, c.y, 62), animation: `rise-in 1.4s cubic-bezier(.22,1,.36,1) ${c.enter}s both` }}>
+            <div className="h-full w-full" style={loop("float-y", c.dur, c.delay)}>
+              <svg viewBox="-50 -50 100 100" className="block h-full w-full overflow-visible">
+                <DoubleCrescentG deg={c.deg} />
+              </svg>
+            </div>
+          </div>
+        ))}
+
+        {/* Hanging stars: each thread is its own small layer, swaying from the arch */}
         {PENDANTS.map((p, i) => {
           const top = archY(p.x);
+          const len = p.to - top;
           return (
-            <g key={i} className="origin-top-self" style={loop("sway", p.sway, p.delay)}>
-              <path
-                d={`M${p.x} ${top}V${p.to}`}
-                stroke="currentColor"
-                strokeWidth="0.9"
-                pathLength={1}
-                className="draw-in"
-                style={{ animationDelay: `${0.9 + i * 0.12}s`, animationDuration: "2.2s" }}
-              />
-              <g style={{ animation: `fade-in 1s ease ${1.8 + i * 0.12}s both` }}>
-                <PendantEnd end={p.end} x={p.x} y={p.to} />
-              </g>
-            </g>
+            <div
+              key={i}
+              className="absolute"
+              style={{ left: `${((p.x - 20) / 520) * 100}%`, top: `${(top / 680) * 100}%`, width: `${(40 / 520) * 100}%`, height: `${((len + 30) / 680) * 100}%` }}
+            >
+              <div className="h-full w-full" style={{ ...loop("sway", p.sway, p.delay), transformOrigin: "50% 0%" }}>
+                <svg viewBox={`-20 0 40 ${len + 30}`} className="block h-full w-full overflow-visible text-moon">
+                  <path
+                    d={`M0 0V${len}`}
+                    stroke="currentColor"
+                    strokeWidth="0.9"
+                    pathLength={1}
+                    className="draw-in"
+                    style={{ animationDelay: `${0.9 + i * 0.12}s`, animationDuration: "2.2s" }}
+                  />
+                  <g style={{ animation: `fade-in 1s ease ${1.8 + i * 0.12}s both` }}>
+                    <PendantEnd end={p.end} x={0} y={len} />
+                  </g>
+                </svg>
+              </div>
+            </div>
           );
         })}
 
-        {/* Compass stars and sparkles */}
-        <g transform="translate(112 548) scale(0.22)">
-          <CompassG className="origin-self animate-spin-slow" />
-        </g>
-        <g transform="translate(410 176) scale(0.18)">
-          <CompassG className="origin-self animate-spin-reverse" />
-        </g>
-        <g className="text-cream" fill="currentColor">
-          {SPARKLES.map((s, i) => (
-            <g key={i} transform={`translate(${s.x} ${s.y}) scale(${s.s})`}>
-              <path d={SPARKLE_G} className="origin-self" style={loop("twinkle", 4 + (i % 4), s.d)} />
-            </g>
-          ))}
-        </g>
-      </motion.svg>
+        {/* Turning compass stars */}
+        <div className="animate-spin-slow absolute text-moon" style={at(112, 548, 22)}>
+          <svg viewBox="-50 -50 100 100" className="block h-full w-full overflow-visible">
+            <CompassG />
+          </svg>
+        </div>
+        <div className="animate-spin-reverse absolute text-moon" style={at(410, 176, 18)}>
+          <svg viewBox="-50 -50 100 100" className="block h-full w-full overflow-visible">
+            <CompassG />
+          </svg>
+        </div>
 
-      {/* Engraved clouds framing the arch's corners, drifting */}
-      <motion.div style={{ x: frontX, y: frontY }} aria-hidden="true" className="pointer-events-none absolute inset-0">
-        <div className="absolute -right-[10%] -top-[3%] w-[34%]" style={{ animation: "fade-in 1.6s ease 1s both" }}>
-          <Cloud className="animate-cloud w-full -scale-x-100 [--cloud-shift:-14px]" style={{ animationDuration: "19s" }} />
-        </div>
-        <div className="absolute -left-[9%] bottom-[1%] w-[44%]" style={{ animation: "fade-in 1.6s ease 1.2s both" }}>
-          <Cloud className="animate-cloud w-full [--cloud-shift:16px]" style={{ animationDuration: "23s" }} />
-        </div>
-        <div className="absolute -right-[8%] bottom-[5%] w-[38%]" style={{ animation: "fade-in 1.6s ease 1.4s both" }}>
-          <Cloud className="animate-cloud w-full -scale-x-100 [--cloud-shift:-18px]" style={{ animationDuration: "27s", animationDelay: "-9s" }} />
-        </div>
+        {/* Twinkling sparkles */}
+        {SPARKLES.map((sp, i) => (
+          <div key={i} className="absolute text-cream" style={{ ...at(sp.x, sp.y, sp.s * 100), ...loop("twinkle", 4 + (i % 4), sp.d) }}>
+            <svg viewBox="-50 -50 100 100" className="block h-full w-full overflow-visible" fill="currentColor">
+              <path d={SPARKLE_G} />
+            </svg>
+          </div>
+        ))}
       </motion.div>
 
       {/* Portrait in the sun */}

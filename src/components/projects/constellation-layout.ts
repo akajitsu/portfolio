@@ -5,33 +5,34 @@
 //  Each project is a major star. Consecutive stars are joined by a segment
 //  that zig-zags through two minor stars, with a short faint branch off the
 //  first one so the figure reads as a constellation, not a straight line.
-//  Adding a project adds a star and a segment — nothing else changes.
+//  Adding a project adds a star and a segment — nothing else changes: stars
+//  are spread across the chart for any count (two, three, five or more).
 // ─────────────────────────────────────────────────────────────────────────────
 
 export type Pt = { x: number; y: number };
-/** `dy` is the vertical direction away from the lines; `lift` how far (px) to move that way. */
-export type LabelPlacement = { side: "left" | "right"; dy: -1 | 1; lift: number };
+/**
+ * Beside the star (`left`/`right`, nudged `dy` × `lift` px away from the
+ * lines) or, when stars are close together, centred `above`/`below` it.
+ */
+export type LabelPlacement = { side: "left" | "right" | "above" | "below"; dy: -1 | 0 | 1; lift: number };
 export type MajorStar = Pt & { label: LabelPlacement; ra: string; dec: string };
 export type Segment = { a: number; b: number; d: string; minors: Pt[]; branch: { d: string; pts: Pt[] } };
 export type Layout = { w: number; h: number; stars: MajorStar[]; segments: Segment[]; path: string };
 
 const r1 = (n: number) => Math.round(n * 10) / 10;
 
-// Desktop chart (600 × 420): hand-placed slots for a balanced composition.
-// Slots beyond the list fall back to a deterministic scatter.
-const DESKTOP_SLOTS: [number, number][] = [
-  [150, 285],
-  [445, 135],
-  [330, 335],
-  [540, 265],
-  [255, 115],
-  [80, 160],
-];
-
-function desktopSlot(i: number): Pt {
-  const s = DESKTOP_SLOTS[i];
-  if (s) return { x: s[0], y: s[1] };
-  return { x: 80 + ((i * 137) % 440), y: 90 + ((i * 89) % 260) };
+/**
+ * Any number of stars, spread left → right so the constellation lines never
+ * cross, alternating high and low (with a little deterministic variation)
+ * so the figure reads as a constellation rather than a row.
+ * `mx` is the side margin, in chart units.
+ */
+const HEIGHTS = [0.64, 0.32, 0.6, 0.27, 0.68, 0.36, 0.56, 0.3];
+function spread(n: number, w: number, h: number, mx: number): Pt[] {
+  return Array.from({ length: n }, (_, i) => ({
+    x: r1(n === 1 ? w / 2 : mx + ((w - 2 * mx) * (i + 0.5)) / n),
+    y: r1(h * (n === 1 ? 0.5 : HEIGHTS[i % HEIGHTS.length])),
+  }));
 }
 
 /** Bayer-style designation for the i-th star (α, β, γ…). */
@@ -88,39 +89,34 @@ function segment(a: number, b: number, A: Pt, B: Pt, k: number): Segment {
   };
 }
 
-function build(w: number, h: number, pts: Pt[]): Layout {
-  const stars = pts.map((p, i) => ({ ...p, label: placeLabel(i, pts, w), ...coordinates(p, w, h) }));
+/**
+ * Below this spacing between neighbouring stars (chart units), side labels
+ * would collide, so labels go above high stars and below low ones instead —
+ * clear of the diagonal lines and of each other.
+ */
+const SIDE_LABEL_SPACING = 250;
+
+function build(w: number, h: number, pts: Pt[], spacing = Infinity): Layout {
+  const stacked = spacing < SIDE_LABEL_SPACING;
+  const stars = pts.map((p, i) => ({
+    ...p,
+    label: stacked ? ({ side: p.y < h / 2 ? "above" : "below", dy: 0, lift: 0 } as const) : placeLabel(i, pts, w),
+    ...coordinates(p, w, h),
+  }));
   const segments = pts.slice(1).map((B, k) => segment(k, k + 1, pts[k], B, k));
   // One continuous path through every segment, for the travelling particle.
   const path = segments.map((s, k) => (k === 0 ? s.d : s.d.replace(/^M[^L]+/, ""))).join("");
   return { w, h, stars, segments, path };
 }
 
-/** Spacious chart for tablet and desktop. */
+/** Spacious chart for tablets. */
 export function desktopLayout(n: number): Layout {
-  return build(600, 420, Array.from({ length: n }, (_, i) => desktopSlot(i)));
+  return build(600, 420, spread(n, 600, 420, 40), (600 - 80) / n);
 }
 
-// Wide chart (1000 × 380) for large screens, where the chart spans the section.
-const WIDE_SLOTS: [number, number][] = [
-  [240, 250],
-  [760, 125],
-  [560, 290],
-  [905, 265],
-  [420, 105],
-  [110, 135],
-];
-
-/** Panoramic chart for large screens. */
+/** Panoramic chart for large screens, where the chart spans the section. */
 export function wideLayout(n: number): Layout {
-  return build(
-    1000,
-    380,
-    Array.from({ length: n }, (_, i) => {
-      const s = WIDE_SLOTS[i];
-      return s ? { x: s[0], y: s[1] } : { x: 100 + ((i * 173) % 800), y: 80 + ((i * 97) % 220) };
-    }),
-  );
+  return build(1000, 380, spread(n, 1000, 380, 60), (1000 - 120) / n);
 }
 
 /** Tall, narrow chart for phones: stars descend in a gentle zig-zag. */

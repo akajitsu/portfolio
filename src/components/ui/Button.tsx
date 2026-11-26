@@ -41,7 +41,7 @@ const variants: Record<Variant, string> = {
     sheen +
     " bg-[var(--btn-bg)] text-[var(--btn-fg)] shadow-[0_10px_30px_-14px_var(--btn-shadow)] hover:bg-[var(--btn-hover)] hover:shadow-[0_16px_38px_-12px_var(--btn-shadow)]",
   // Minimal gold outline.
-  secondary: sheen + " border border-moon/55 bg-card/50 text-ink backdrop-blur hover:border-moon hover:bg-moon/10 hover:text-accent",
+  secondary: sheen + " border border-moon/55 bg-card/70 text-ink hover:border-moon hover:bg-moon/10 hover:text-accent",
   ghost: "!px-3 text-ink hover:text-accent",
 };
 

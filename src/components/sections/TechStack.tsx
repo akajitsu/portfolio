@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { DrawRule } from "@/components/celestial/Drawn";
 import { roman } from "@/components/celestial/Ornaments";
 import FadeIn from "@/components/ui/FadeIn";
 import SectionHeading from "@/components/ui/SectionHeading";
@@ -18,11 +19,12 @@ function SkillTile({ skill }: { skill: Skill }) {
     <>
       <span
         aria-hidden="true"
-        className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-moon/45 font-display text-[0.95rem] font-semibold text-accent transition-[background-color,border-color] duration-500 group-hover:border-moon group-hover:bg-moon/12"
+        className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-moon/45 font-display text-[0.95rem] font-semibold text-accent transition-[background-color,border-color,box-shadow] duration-500 group-hover:border-moon group-hover:bg-moon/12 group-hover:shadow-[0_0_18px_-4px_var(--star-glow-soft)]"
       >
         {skill.icon ? <Image src={skill.icon} alt="" width={22} height={22} className="h-[22px] w-[22px] object-contain" /> : monogramFor(skill)}
-        {/* A small planet that makes one orbit of the icon on hover */}
-        <span className="absolute -inset-[3px] rotate-0 transition-[rotate] duration-[1.4s] ease-out-expo group-hover:rotate-[360deg]">
+        {/* A faint orbit around the icon, and a small planet that travels it once on hover */}
+        <span className="pointer-events-none absolute -inset-[5px] rounded-full border border-dashed border-moon/15 transition-colors duration-500 group-hover:border-moon/45" />
+        <span className="absolute -inset-[5px] rotate-0 transition-[rotate] duration-[1.4s] ease-out-expo group-hover:rotate-[360deg]">
           <span className="absolute left-1/2 top-0 h-[5px] w-[5px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-moon opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
         </span>
       </span>
@@ -37,7 +39,7 @@ function SkillTile({ skill }: { skill: Skill }) {
   );
 
   const cls =
-    "group flex h-full items-center gap-3 rounded-2xl border border-moon/25 bg-card/60 p-3 pr-4 backdrop-blur-[2px] transition-[border-color,transform] duration-500 ease-out-expo hover:-translate-y-0.5 hover:border-moon/60";
+    "group flex h-full items-center gap-3 rounded-2xl border border-moon/25 bg-card/75 p-3 pr-4 transition-[border-color,transform] duration-500 ease-out-expo hover:-translate-y-0.5 hover:border-moon/60";
 
   return isUsableLink(skill.url) ? (
     <a href={skill.url} target="_blank" rel="noopener noreferrer" className={cls}>
@@ -56,9 +58,11 @@ export default function TechStack() {
     <section id="stack" aria-labelledby="stack-title" className="shell py-20 sm:py-28">
       <SectionHeading id="stack-title" index={6} eyebrow="Instruments" title="Tech stack" description="What I've used so far, with honest levels." />
 
-      <div className="mt-14 divide-y divide-moon/25 border-y border-moon/25">
+      <div className="relative mt-14">
+        <DrawRule className="absolute inset-x-0 top-0" />
         {categories.map((cat, ci) => (
-          <div key={cat.id} className="grid gap-x-12 gap-y-4 py-8 lg:grid-cols-12">
+          <div key={cat.id} className="relative grid gap-x-12 gap-y-4 py-8 lg:grid-cols-12">
+            <DrawRule className="absolute inset-x-0 bottom-0" delay={0.2 + ci * 0.1} />
             <FadeIn className="lg:col-span-5">
               {/* Inventory entry: catalogue number and count, like an instrument register */}
               <p aria-hidden="true" className="mb-1.5 font-caps text-[0.62rem] tracking-[0.2em] text-faint uppercase">

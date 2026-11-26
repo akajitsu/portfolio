@@ -1,3 +1,4 @@
+import { DrawFrame } from "@/components/celestial/Drawn";
 import { Corners, EightStar } from "@/components/celestial/Ornaments";
 import Button from "@/components/ui/Button";
 import FadeIn from "@/components/ui/FadeIn";
@@ -66,7 +67,8 @@ export default function Resume() {
         <FadeIn delay={0.1} className="lg:col-span-7">
           {resume.available ? (
             <>
-              <div className="relative rounded-[18px] border border-moon/35 bg-card p-2.5 shadow-[0_40px_80px_-50px_var(--shadow-deep)]">
+              <div className="relative rounded-[18px] border border-moon/10 bg-card p-2.5 shadow-[0_40px_80px_-50px_var(--shadow-deep)]">
+                <DrawFrame radius={18} delay={0.25} opacity={0.5} />
                 <Corners inset="5px" />
                 <div className="overflow-hidden rounded-[12px] border border-moon/20">
                   <div className="flex items-center justify-between border-b border-moon/20 bg-paper-2 px-4 py-3 text-sm">

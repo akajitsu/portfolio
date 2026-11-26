@@ -85,7 +85,7 @@ export default function ProjectPreview({ project, className, showPhone = true, p
                 <span aria-hidden="true" className="absolute inset-0 bg-night/0 transition-colors duration-500 group-hover/preview:bg-night/25 group-focus-visible/preview:bg-night/25" />
                 <span
                   aria-hidden="true"
-                  className="absolute bottom-4 left-4 inline-flex translate-y-2 items-center gap-1.5 rounded-full border border-[#e4c58b]/70 bg-night/85 px-3.5 py-1.5 text-xs font-medium tracking-[0.04em] text-[#f0d9a6] opacity-0 backdrop-blur transition-[opacity,transform] duration-500 ease-out-expo group-hover/preview:translate-y-0 group-hover/preview:opacity-100 group-focus-visible/preview:translate-y-0 group-focus-visible/preview:opacity-100"
+                  className="absolute bottom-4 left-4 inline-flex translate-y-2 items-center gap-1.5 rounded-full border border-[#e4c58b]/70 bg-night/85 px-3.5 py-1.5 text-xs font-medium tracking-[0.04em] text-[#f0d9a6] opacity-0 transition-[opacity,transform] duration-500 ease-out-expo group-hover/preview:translate-y-0 group-hover/preview:opacity-100 group-focus-visible/preview:translate-y-0 group-focus-visible/preview:opacity-100"
                 >
                   Visit site <ArrowUpRight size={13} />
                 </span>

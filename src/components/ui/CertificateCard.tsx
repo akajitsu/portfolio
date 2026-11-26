@@ -1,5 +1,7 @@
 import Image from "next/image";
+import { DrawFrame } from "@/components/celestial/Drawn";
 import { Corners, Sparkle, SunBurst, roman } from "@/components/celestial/Ornaments";
+import FadeIn from "@/components/ui/FadeIn";
 import { ArrowUpRight } from "@/components/ui/Icons";
 import type { Certificate } from "@/types";
 import { cn } from "@/lib/utils";
@@ -23,13 +25,17 @@ function Seal() {
 export default function CertificateCard({
   certificate,
   heading: H = "h3",
+  index = 0,
 }: {
   certificate: Certificate;
   heading?: "h2" | "h3";
+  /** Position in its list: cards arrive one after another. */
+  index?: number;
 }) {
   const { title, issuer, date, image, href } = certificate;
   const body = (
     <>
+      <DrawFrame radius={18} delay={0.2 + index * 0.15} opacity={0.5} />
       <Corners inset="6px" />
       <div className="relative aspect-[4/3] overflow-hidden rounded-[10px] border border-moon/20 bg-paper-2">
         {image ? (
@@ -39,7 +45,12 @@ export default function CertificateCard({
         )}
       </div>
       <div className="px-2 pb-2 pt-5">
-        <p className="eyebrow">{issuer}</p>
+        <p className="eyebrow flex items-baseline justify-between gap-3">
+          <span>{issuer}</span>
+          <span aria-hidden="true" className="shrink-0 text-[0.58rem] text-faint">
+            Arch. {roman(index + 1)}
+          </span>
+        </p>
         <H className="display mt-2 text-[1.65rem] leading-[1.1]">{title}</H>
         <div className="mt-4 flex items-center justify-between gap-4 border-t border-moon/20 pt-3">
           <span className="label inline-flex items-center gap-1.5">
@@ -56,11 +67,16 @@ export default function CertificateCard({
   );
 
   const cls =
-    "group relative block h-full rounded-[18px] border border-moon/35 bg-card/70 p-3 backdrop-blur-[2px] transition-[border-color,transform,box-shadow] duration-500 ease-out-expo";
+    "group relative block h-full rounded-[18px] border border-moon/10 bg-card/80 p-3 transition-[border-color,transform,box-shadow] duration-500 ease-out-expo";
 
-  if (!href) return <li className={cls}>{body}</li>;
+  if (!href)
+    return (
+      <FadeIn as="li" delay={index * 0.12} className={cls}>
+        {body}
+      </FadeIn>
+    );
   return (
-    <li className="h-full">
+    <FadeIn as="li" delay={index * 0.12} className="h-full">
       <a
         href={href}
         target="_blank"
@@ -70,21 +86,29 @@ export default function CertificateCard({
         {body}
         <span className="sr-only"> (verification opens in a new tab)</span>
       </a>
-    </li>
+    </FadeIn>
   );
 }
 
 /** Shown until the first certificate is added: three empty, numbered plates. */
 export function CertificateArchiveEmpty({ className }: { className?: string }) {
   return (
-    <div className={cn("relative overflow-hidden rounded-[22px] border border-moon/30 bg-card/40 px-5 py-10 sm:px-10 sm:py-14", className)}>
+    <div className={cn("relative overflow-hidden rounded-[22px] border border-moon/10 bg-card/40 px-5 py-10 sm:px-10 sm:py-14", className)}>
+      <DrawFrame radius={22} opacity={0.45} />
       <Corners inset="10px" />
+      {/* Empty plates arrive one by one; each marker lights as it lands */}
       <ul aria-hidden="true" className="grid gap-4 opacity-80 sm:grid-cols-3">
         {[1, 2, 3].map((n) => (
-          <li key={n} className={cn("relative flex aspect-[16/10] items-center justify-center rounded-xl border border-dashed border-moon/30", n > 1 && "hidden sm:flex")}>
+          <FadeIn
+            as="li"
+            key={n}
+            delay={0.35 + n * 0.18}
+            y={14}
+            className={cn("relative flex aspect-[16/10] items-center justify-center rounded-xl border border-dashed border-moon/30", n > 1 && "hidden sm:flex")}
+          >
             <span className="display text-4xl italic text-moon/40">{roman(n)}</span>
             <Sparkle size={9} className="animate-twinkle absolute right-3 top-3 text-cream/60" style={{ animationDelay: `${-n * 1.3}s` }} />
-          </li>
+          </FadeIn>
         ))}
       </ul>
       <div className="mt-10 flex flex-col items-center text-center">

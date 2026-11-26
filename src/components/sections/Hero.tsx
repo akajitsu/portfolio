@@ -1,4 +1,5 @@
 import { Constellation } from "@/components/celestial/Constellation";
+import DiscoveryStar from "@/components/celestial/DiscoveryStar";
 import HeroCelestial from "@/components/celestial/HeroCelestial";
 import { EightStar } from "@/components/celestial/Ornaments";
 import AnimatedRoles from "@/components/profile/AnimatedRoles";
@@ -21,8 +22,25 @@ export default function Hero() {
   const firstRole = profile.roles[0] ?? "";
 
   return (
-    <section id="home" aria-label="Introduction" className="relative isolate overflow-x-clip pb-24 pt-28 sm:pt-32 lg:flex lg:min-h-[100svh] lg:items-center">
-      <Constellation {...NORTH} delay={1.6} className="pointer-events-none absolute left-[46%] top-[16%] -z-10 hidden w-36 opacity-70 xl:block" />
+    <section id="home" aria-label="Introduction" className="group/hero relative isolate overflow-x-clip pb-24 pt-28 sm:pt-32 lg:flex lg:min-h-[100svh] lg:items-center">
+      {/* A small constellation that brightens while you're in the hero */}
+      <Constellation
+        {...NORTH}
+        delay={1.6}
+        className="pointer-events-none absolute left-[46%] top-[16%] -z-10 hidden w-36 opacity-70 transition-opacity duration-1000 group-hover/hero:opacity-100 xl:block"
+        linesClassName="transition-[stroke-opacity] duration-1000 group-hover/hero:[stroke-opacity:0.95]"
+        starsClassName="transition-[filter] duration-1000 group-hover/hero:drop-shadow-[0_0_2px_var(--star-glow)]"
+      />
+      {/* A star to discover in the gap between the words and the arch */}
+      <DiscoveryStar
+        name="Sirius"
+        designation="α Canis Majoris"
+        ra="06h 45m 09s"
+        dec="−16° 42′ 58″"
+        note="The brightest star in the night sky, about 8.6 light-years away."
+        className="left-[56%] top-[60%] hidden lg:block"
+        hintDelay={2}
+      />
 
       <div className="shell relative grid items-center gap-x-10 gap-y-14 lg:grid-cols-12">
         <div className="lg:col-span-7">

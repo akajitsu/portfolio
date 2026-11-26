@@ -1,12 +1,12 @@
 "use client";
 import { ArrowUp } from "@/components/ui/Icons";
+import { glideTo } from "@/lib/glide";
 
 export default function BackToTop() {
   function toTop() {
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    window.scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" });
-    // Move focus to the top of the page for keyboard users.
+    // Move focus to the top of the page for keyboard users, then glide there.
     document.getElementById("main")?.focus({ preventScroll: true });
+    glideTo(0, window.matchMedia("(prefers-reduced-motion: reduce)").matches);
   }
 
   return (

@@ -14,7 +14,7 @@ export default function CertificatesPage() {
         {certificates.length > 0 ? (
           <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {certificates.map((c, i) => (
-              <CertificateCard key={`${c.title}-${i}`} certificate={c} heading="h2" />
+              <CertificateCard key={`${c.title}-${i}`} certificate={c} heading="h2" index={i} />
             ))}
           </ul>
         ) : (

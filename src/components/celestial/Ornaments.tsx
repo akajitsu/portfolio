@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 // ─────────────────────────────────────────────────────────────────────────────
 //  The observatory's visual vocabulary, after the reference illustrations:
 //  engraved stars, sunbursts, crescents (one with a face), the triple moon,
-//  dotted bursts, leaf sprigs, hanging drips and engraved clouds.
+//  dotted bursts, leaf sprigs and hanging drips.
 //
 //  Two forms of each motif:
 //   • `…G` glyphs  — bare <g> groups in a −50…50 box, for use inside a larger SVG.
@@ -245,10 +245,11 @@ export function SunBurstG({ className, style, spin = false }: G & { spin?: boole
   );
 }
 
+/** `spin` turns the whole icon — a GPU layer — rather than repainting the rays inside it. */
 export function SunBurst({ size = 40, className, spin, ...rest }: Svg & { spin?: boolean }) {
   return (
-    <svg {...svgProps(size, className, rest)}>
-      <SunBurstG spin={spin} />
+    <svg {...svgProps(size, cn(className, spin && "animate-spin-slow"), rest)}>
+      <SunBurstG />
     </svg>
   );
 }
@@ -275,7 +276,7 @@ export function DottedBurstG({ className, style }: G) {
   );
 }
 
-// ─── Leaves & clouds ─────────────────────────────────────────────────────────
+// ─── Leaves ──────────────────────────────────────────────────────────────────
 
 /** Point and tangent angle on a cubic Bézier at t. */
 function bez(p: number[][], t: number) {
@@ -305,60 +306,6 @@ export function LeafG({ className, style }: G) {
       ))}
       <path d="M4 -48q4 -6 1 -10q-5 3 -1 10Z" fill="currentColor" stroke="none" />
     </g>
-  );
-}
-
-// Lobes: [cx, cy, r]. Box 0…300 × 0…150; the bottom row sits on one line.
-const PUFFS: [number, number, number][] = [
-  [172, 62, 46],
-  [118, 78, 38],
-  [226, 82, 36],
-  [74, 104, 28],
-  [264, 108, 26],
-  [140, 112, 30],
-  [200, 114, 30],
-  [104, 118, 24],
-  [236, 120, 22],
-];
-/** Arc segment on a lobe, from `a` to `b` degrees (0° = up, clockwise). */
-function arc(cx: number, cy: number, r: number, a: number, b: number) {
-  const [x1, y1] = polar(cx, cy, r, a);
-  const [x2, y2] = polar(cx, cy, r, b);
-  return `M${x1} ${y1}A${r} ${r} 0 0 1 ${x2} ${y2}`;
-}
-
-/**
- * Engraved cloud, after the arch illustration: one continuous silhouette,
- * lobe contours across the top, and dashed hatching that follows each lobe.
- * Colours come from the `--cloud-fill` / `--cloud-line` theme variables.
- */
-export function Cloud({ className, style }: { className?: string; style?: CSSProperties }) {
-  return (
-    <svg viewBox="0 0 300 150" aria-hidden focusable={false} className={className} style={style} preserveAspectRatio="xMidYMax meet">
-      {/* Silhouette: wide strokes under the fills leave only the outer edge visible. */}
-      <g fill="none" stroke="var(--cloud-line)" strokeWidth={3.4}>
-        {PUFFS.map(([cx, cy, r], i) => (
-          <circle key={i} cx={cx} cy={cy} r={r} />
-        ))}
-      </g>
-      <g fill="var(--cloud-fill)">
-        {PUFFS.map(([cx, cy, r], i) => (
-          <circle key={i} cx={cx} cy={cy} r={r} />
-        ))}
-      </g>
-      {/* Lobe contours and hatching (front lobes only, upper edges only). */}
-      <g fill="none" stroke="var(--cloud-line)" strokeLinecap="round">
-        {PUFFS.slice(1).map(([cx, cy, r], i) => (
-          <g key={i}>
-            <path d={arc(cx, cy, r, -62, 58)} strokeWidth={1.4} />
-            <path d={arc(cx, cy, r - 5, -58, 18)} strokeWidth={0.9} strokeDasharray="4 4" opacity={0.75} />
-            <path d={arc(cx, cy, r - 10, -50, -4)} strokeWidth={0.8} strokeDasharray="2 4" opacity={0.55} />
-          </g>
-        ))}
-        <path d={arc(PUFFS[0][0], PUFFS[0][1], PUFFS[0][2] - 6, -60, 30)} strokeWidth={0.9} strokeDasharray="4 4" opacity={0.75} />
-        <path d={arc(PUFFS[0][0], PUFFS[0][1], PUFFS[0][2] - 12, -50, 0)} strokeWidth={0.8} strokeDasharray="2 4" opacity={0.55} />
-      </g>
-    </svg>
   );
 }
 
@@ -458,11 +405,14 @@ export function CompassRose({ size = 120, className, letters, ...rest }: Svg & {
 
 const ECLIPSE_RAYS = rays(0, 0, 25, 47, 36, 4, 24);
 
-/** Sun and moon together: a rayed sun with the moon's crescent crossing its face. */
-export function SunMoonG({ className, style }: G) {
+/**
+ * Sun and moon together: a rayed sun with the moon's crescent crossing its face.
+ * `still` drops the internal ray rotation (animate the wrapper instead — cheaper).
+ */
+export function SunMoonG({ className, style, still = false }: G & { still?: boolean }) {
   return (
     <g className={className} style={style}>
-      <g className="origin-self animate-spin-slower">
+      <g className={still ? undefined : "origin-self animate-spin-slower"}>
         <path d={ECLIPSE_RAYS} fill="currentColor" opacity={0.85} />
       </g>
       <circle r={22} fill="none" stroke="currentColor" strokeWidth={1.6} />
@@ -472,16 +422,19 @@ export function SunMoonG({ className, style }: G) {
   );
 }
 
-/** Orbital diagram: two tilted elliptical orbits around a small sun. */
-export function OrbitG({ className, style }: G) {
+/**
+ * Orbital diagram: two tilted elliptical orbits around a small sun.
+ * `still` drops the internal counter-rotation (animate the wrapper instead — cheaper).
+ */
+export function OrbitG({ className, style, still = false }: G & { still?: boolean }) {
   return (
     <g className={className} style={style} fill="none" stroke="currentColor">
       <circle r={46} strokeWidth={0.6} strokeOpacity={0.5} strokeDasharray="1 3.5" />
-      <g className="origin-self animate-spin-slow">
+      <g className={still ? undefined : "origin-self animate-spin-slow"}>
         <ellipse rx={44} ry={15} strokeWidth={1} transform="rotate(-28)" />
         <circle cx={38.4} cy={-7.6} r={3.2} fill="currentColor" stroke="none" transform="rotate(-28)" />
       </g>
-      <g className="origin-self animate-spin-reverse">
+      <g className={still ? undefined : "origin-self animate-spin-reverse"}>
         <ellipse rx={30} ry={11} strokeWidth={0.9} strokeOpacity={0.8} transform="rotate(34)" />
         <circle cx={-29} cy={2.6} r={2.2} fill="currentColor" stroke="none" transform="rotate(34)" />
       </g>

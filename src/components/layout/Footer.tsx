@@ -1,40 +1,56 @@
+import type { CSSProperties } from "react";
 import BackToTop from "@/components/layout/BackToTop";
 import CelestialBand from "@/components/celestial/CelestialBand";
-import { Cloud, DoubleCrescentG, EightStar, SPARKLE_G, SunBurstG } from "@/components/celestial/Ornaments";
+import { DoubleCrescentG, EightStar, SPARKLE_G, SunBurstG } from "@/components/celestial/Ornaments";
 import { navigation } from "@/data/navigation";
 import { profile, socials } from "@/data/profile";
 import { isUsableLink } from "@/lib/utils";
 
-/** Crescent · sun · crescent — the arch illustration's column, laid on its side. */
+/** Place a w-wide box centred on (x, y) in the emblem's 340×100 box (centred on 0). */
+const at = (x: number, y: number, w: number): CSSProperties => ({
+  left: `${((x + 170 - w / 2) / 340) * 100}%`,
+  top: `${((y + 50 - w / 2) / 100) * 100}%`,
+  width: `${(w / 340) * 100}%`,
+  height: `${(w / 100) * 100}%`,
+});
+
+const SPARKS: [number, number, number, number][] = [
+  [-150, -30, 12, 0],
+  [-60, 36, 8, -2],
+  [62, -38, 10, -1],
+  [152, 28, 13, -3],
+];
+
+/**
+ * Crescent · sun · crescent — the arch illustration's column, laid on its side.
+ * Each piece is its own small layer, so floating and turning cost no repaints.
+ */
 function Emblem() {
   return (
-    <svg viewBox="-170 -50 340 100" aria-hidden="true" focusable="false" className="w-[260px] overflow-visible sm:w-[320px]">
-      <g transform="translate(-105 0) scale(0.55)" className="text-cream">
-        <g className="origin-self animate-float">
+    <div aria-hidden="true" className="relative aspect-[340/100] w-[260px] sm:w-[320px]">
+      <div className="absolute text-cream" style={at(-105, 0, 55)}>
+        <svg viewBox="-50 -50 100 100" className="animate-float block h-full w-full overflow-visible">
           <DoubleCrescentG deg={90} />
-        </g>
-      </g>
-      <g className="text-bronze">
-        <SunBurstG spin />
-      </g>
-      <g transform="translate(105 0) scale(0.55)" className="text-cream">
-        <g className="origin-self animate-float [animation-delay:-4s]">
+        </svg>
+      </div>
+      <div className="absolute text-bronze" style={at(0, 0, 100)}>
+        <svg viewBox="-50 -50 100 100" className="animate-spin-slow block h-full w-full overflow-visible">
+          <SunBurstG />
+        </svg>
+      </div>
+      <div className="absolute text-cream" style={at(105, 0, 55)}>
+        <svg viewBox="-50 -50 100 100" className="animate-float block h-full w-full overflow-visible [animation-delay:-4s]">
           <DoubleCrescentG deg={270} />
-        </g>
-      </g>
-      <g className="text-cream" fill="currentColor">
-        {[
-          [-150, -30, 0.12, 0],
-          [-60, 36, 0.08, -2],
-          [62, -38, 0.1, -1],
-          [152, 28, 0.13, -3],
-        ].map(([x, y, s, d], i) => (
-          <g key={i} transform={`translate(${x} ${y}) scale(${s})`}>
-            <path d={SPARKLE_G} className="origin-self animate-twinkle" style={{ animationDelay: `${d}s` }} />
-          </g>
-        ))}
-      </g>
-    </svg>
+        </svg>
+      </div>
+      {SPARKS.map(([x, y, w, d], i) => (
+        <div key={i} className="absolute text-cream" style={at(x, y, w)}>
+          <svg viewBox="-50 -50 100 100" className="animate-twinkle block h-full w-full overflow-visible" fill="currentColor" style={{ animationDelay: `${d}s` }}>
+            <path d={SPARKLE_G} />
+          </svg>
+        </div>
+      ))}
+    </div>
   );
 }
 
@@ -48,12 +64,6 @@ export default function Footer() {
       <CelestialBand />
 
       <div className="relative isolate flex justify-center pb-4 pt-14">
-        <div aria-hidden="true" className="pointer-events-none absolute -left-20 top-8 -z-10 w-[200px] sm:-left-8 sm:w-[260px]">
-          <Cloud className="animate-cloud w-full [--cloud-shift:30px]" style={{ animationDuration: "28s" }} />
-        </div>
-        <div aria-hidden="true" className="pointer-events-none absolute -right-20 top-12 -z-10 w-[190px] -scale-x-100 sm:-right-8 sm:w-[240px]">
-          <Cloud className="animate-cloud w-full [--cloud-shift:-24px]" style={{ animationDuration: "33s", animationDelay: "-10s" }} />
-        </div>
         <Emblem />
       </div>
 

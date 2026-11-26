@@ -1,3 +1,4 @@
+import DiscoveryStar from "@/components/celestial/DiscoveryStar";
 import ScrollCompass from "@/components/celestial/ScrollCompass";
 import Timeline from "@/components/journey/Timeline";
 import FadeIn from "@/components/ui/FadeIn";
@@ -17,7 +18,20 @@ export default function Journey() {
 
         <FadeIn className="hidden lg:order-1 lg:col-span-4 lg:block">
           <div className="sticky top-28">
-            <ScrollCompass className="w-full max-w-[300px] opacity-85" />
+            <div className="relative max-w-[300px]">
+              <ScrollCompass className="w-full opacity-85" />
+              <DiscoveryStar
+                name="Arcturus"
+                designation="α Boötis"
+                ra="14h 15m 40s"
+                dec="+19° 10′ 57″"
+                note="The brightest star in the northern celestial hemisphere. Its name means “guardian of the bear”."
+                className="right-[2%] top-[6%]"
+                align="end"
+                side="bottom"
+                hintDelay={3}
+              />
+            </div>
             <p aria-hidden="true" className="mt-5 max-w-[300px] text-center font-caps text-[0.62rem] tracking-[0.2em] text-faint uppercase">
               Rosa ventorum · bearing true north
             </p>

@@ -38,10 +38,11 @@
   --color-night: #10172b;
   --color-night-2: #151e36;
 
-  /* Cormorant Garamond for display, Cinzel for engraved capitals, Manrope for text. */
-  --font-sans: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
-  --font-display: var(--font-cormorant), "Cormorant Garamond", Georgia, serif;
-  --font-caps: var(--font-cinzel), "Cinzel", Georgia, serif;
+  /* Montserrat throughout. The three roles keep their own tokens (and their own
+     weight, tracking and sizing in the utilities below), so they can diverge later. */
+  --font-sans: var(--font-montserrat), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-montserrat), ui-sans-serif, system-ui, sans-serif;
+  --font-caps: var(--font-montserrat), ui-sans-serif, system-ui, sans-serif;
 
   --ease-out-expo: cubic-bezier(0.22, 1, 0.36, 1);
 
@@ -53,7 +54,6 @@
   --animate-draw: draw 3.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
   --animate-sway: sway 7s ease-in-out infinite;
   --animate-float: float-y 9s ease-in-out infinite;
-  --animate-cloud: cloud 26s ease-in-out infinite;
   --animate-marquee: marquee 90s linear infinite;
   --animate-glow: glow-pulse 6s ease-in-out infinite;
 }
@@ -69,14 +69,13 @@
   --nebula-a: rgba(196, 164, 112, 0.17);
   --nebula-b: rgba(160, 126, 76, 0.1);
   --nebula-c: rgba(222, 204, 168, 0.32);
+  --nebula-d: rgba(190, 150, 96, 0.1);
   --dust: #a2814f;
   --dust-opacity: 0.45;
   --sky-line: rgba(138, 102, 52, 0.5);
   --sky-halo: rgba(176, 138, 82, 0.32);
   --meteor: #9a7a4a;
   --parchment-opacity: 0.32;
-  --cloud-fill: #faf8f1;
-  --cloud-line: #a08c6a;
   --shimmer-hi: #b08d58;
   --foil-a: #ead7ad;
   --foil-b: #b8945a;
@@ -123,14 +122,13 @@
   --nebula-a: rgba(82, 86, 168, 0.2);
   --nebula-b: rgba(48, 68, 130, 0.3);
   --nebula-c: rgba(165, 154, 191, 0.08);
+  --nebula-d: rgba(201, 155, 85, 0.06);
   --dust: #f0d9a6;
   --dust-opacity: 0.6;
   --sky-line: rgba(240, 217, 166, 0.42);
   --sky-halo: rgba(240, 217, 166, 0.5);
   --meteor: #f6e7c4;
   --parchment-opacity: 0;
-  --cloud-fill: #ece6d8;
-  --cloud-line: #2a3350;
   --shimmer-hi: #fff4d6;
   --foil-a: #fbe7a8;
   --foil-b: #dcae4c;
@@ -191,6 +189,17 @@
   0%, 100% { transform: rotate(-7deg); }
   50% { transform: rotate(7deg); }
 }
+/* Star notes: a ring that ripples out now and then, hinting "there's something here". */
+@keyframes disc-ping {
+  0% { transform: scale(0.55); opacity: 0; }
+  12% { opacity: 0.75; }
+  60%, 100% { transform: scale(1.7); opacity: 0; }
+}
+/* Tiny motes drifting around a star (SVG units). */
+@keyframes mote-drift {
+  0%, 100% { transform: translate(0, 0); opacity: 0.35; }
+  50% { transform: translate(1.6px, -2.4px); opacity: 1; }
+}
 /* A star that flares once when its section arrives. */
 @keyframes flare {
   0% { opacity: 0; transform: scale(0.3) rotate(-60deg); }
@@ -213,14 +222,16 @@
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-10px); }
 }
-@keyframes cloud {
-  0%, 100% { transform: translateX(0); }
-  50% { transform: translateX(var(--cloud-shift, 28px)); }
-}
 @keyframes marquee {
   to { transform: translateX(-50%); }
 }
+/* A highlight sweeping across gold text. Played once, not looped: animating a
+   background can't run on the GPU, so a loop would repaint the text forever. */
 @keyframes shimmer {
+  from { background-position: 130% 0; }
+  to { background-position: -130% 0; }
+}
+@keyframes shimmer-again {
   from { background-position: 130% 0; }
   to { background-position: -130% 0; }
 }
@@ -259,6 +270,31 @@
   44% { stroke-dashoffset: -1; opacity: 1; }
   50%, 100% { stroke-dashoffset: -1; opacity: 0; }
 }
+/* Hero roles: letters rise in, then lift away (see AnimatedRoles). */
+@keyframes role-in {
+  from { transform: translateY(105%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+@keyframes role-out {
+  from { transform: translateY(0); opacity: 1; }
+  to { transform: translateY(-105%); opacity: 0; }
+}
+/* Projects entrance: a star is "discovered" — a ring of light bursts out,
+   a few motes scatter, and the lines glint once the figure is complete. */
+@keyframes star-burst {
+  0% { transform: scale(0.3); opacity: 0; }
+  25% { opacity: 0.9; }
+  100% { transform: scale(2.6); opacity: 0; }
+}
+@keyframes mote-out {
+  0% { transform: translate(0, 0) scale(1); opacity: 0; }
+  15% { opacity: 1; }
+  100% { transform: translate(var(--dx), var(--dy)) scale(0.3); opacity: 0; }
+}
+@keyframes line-glint {
+  0%, 100% { opacity: 0; }
+  35% { opacity: 0.85; }
+}
 @keyframes intro-out {
   to { opacity: 0; visibility: hidden; }
 }
@@ -277,7 +313,6 @@
   body {
     background: var(--color-paper);
     color: var(--color-ink);
-    transition: background-color 0.5s ease, color 0.5s ease;
     overflow-x: clip;
   }
   ::selection {
@@ -320,23 +355,26 @@ body::after {
   color: var(--color-mute);
 }
 
-/* Engraved capitals for catalogue labels (Cinzel). */
+/* Small spaced capitals for catalogue labels. */
 @utility eyebrow {
   font-family: var(--font-caps);
-  font-size: 0.72rem;
-  font-weight: 500;
-  letter-spacing: 0.2em;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
   line-height: 1.4;
   color: var(--color-accent);
 }
 
-/* Display headings: Cormorant needs a touch more size and no negative crush. */
+/* Display headings. Montserrat's lowercase is much taller than a book serif's,
+   so font-size-adjust scales it to a 0.42 x-height: every heading keeps the
+   visual size it was designed at, without retuning each size. */
 @utility display {
   font-family: var(--font-display);
   font-weight: 500;
-  letter-spacing: -0.012em;
-  line-height: 1.02;
+  font-size-adjust: 0.42;
+  letter-spacing: -0.02em;
+  line-height: 1.08;
 }
 
 /* Hairline that fades out at both ends — the observatory's standard rule. */
@@ -361,7 +399,12 @@ body::after {
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  animation: shimmer 8s linear infinite;
+  background-position: -130% 0;
+  animation: shimmer 2.6s cubic-bezier(0.4, 0, 0.2, 1) 1.3s both;
+  /* …and again whenever the pointer enters the hero. */
+  .group\/hero:hover & {
+    animation: shimmer-again 2.6s cubic-bezier(0.4, 0, 0.2, 1) both;
+  }
 }
 
 /* Fade the ends of horizontally scrolling bands. */
@@ -408,16 +451,20 @@ body::after {
   transition: opacity 0.6s ease;
 }
 
-/* Theme switch: for a moment, every colour eases instead of snapping
-   (ThemeToggle adds this class for ~0.6s; other transitions pause meanwhile). */
-:root.theme-transition,
-:root.theme-transition *,
-:root.theme-transition *::before,
-:root.theme-transition *::after {
-  transition-property: background-color, border-color, color, fill, stroke, outline-color, text-decoration-color !important;
-  transition-duration: 0.55s !important;
-  transition-timing-function: ease !important;
-  transition-delay: 0s !important;
+/* Theme switch (see ThemeToggle): the browser snapshots the page, the new
+   theme is applied in one step, and the two snapshots cross-fade on the GPU —
+   no per-element colour animation, so it stays smooth however large the page. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.6s;
+  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Sections out of view pause their animations (see PauseOffscreen). */
+.is-offscreen *,
+.is-offscreen *::before,
+.is-offscreen *::after {
+  animation-play-state: paused !important;
 }
 
 /* Decorative SVG strokes that draw themselves in. */

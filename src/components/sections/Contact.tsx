@@ -1,3 +1,4 @@
+import DiscoveryStar from "@/components/celestial/DiscoveryStar";
 import NorthStar from "@/components/celestial/NorthStar";
 import { Sparkle } from "@/components/celestial/Ornaments";
 import CopyEmail from "@/components/contact/CopyEmail";
@@ -47,7 +48,22 @@ export default function Contact() {
             <p className="text-mute">Email coming soon.</p>
           )}
           {/* The final section steers by the north star */}
-          <NorthStar className="pointer-events-none mt-16 hidden w-64 opacity-85 lg:block" />
+          <div className="relative mt-16 hidden w-64 lg:block">
+            <NorthStar className="pointer-events-none w-full opacity-85" />
+            {/* Polaris sits at (24, 22) in the 120-unit drawing */}
+            <DiscoveryStar
+              name="Polaris"
+              designation="α Ursae Minoris"
+              ra="02h 31m 49s"
+              dec="+89° 15′ 51″"
+              note="It sits almost directly above Earth’s north pole, so the whole night sky seems to turn around it."
+              className="left-[20%] top-[18.3%]"
+              align="start"
+              side="bottom"
+              showGlyph={false}
+              hintDelay={1.5}
+            />
+          </div>
         </FadeIn>
 
         <FadeIn delay={0.08} className="lg:col-span-7">

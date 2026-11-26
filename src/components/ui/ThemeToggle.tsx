@@ -1,6 +1,7 @@
 "use client";
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useState } from "react";
+import { flushSync } from "react-dom";
 import { EightStar, SunGlyph } from "@/components/celestial/Ornaments";
 
 type Theme = "light" | "dark";
@@ -22,15 +23,23 @@ export default function ThemeToggle() {
   function toggle() {
     const next: Theme = theme === "dark" ? "light" : "dark";
     const root = document.documentElement;
-    // Ease every colour across the switch (see .theme-transition in globals.css).
-    root.classList.add("theme-transition");
-    window.clearTimeout(Number(root.dataset.themeTimer));
-    root.dataset.themeTimer = String(window.setTimeout(() => root.classList.remove("theme-transition"), 650));
-    root.dataset.theme = next;
-    try {
-      localStorage.setItem("theme", next);
-    } catch {}
-    setTheme(next);
+    const apply = () => {
+      root.dataset.theme = next;
+      try {
+        localStorage.setItem("theme", next);
+      } catch {}
+      // Commit the icon change synchronously, so it's part of the new snapshot.
+      flushSync(() => setTheme(next));
+    };
+
+    // Cross-fade snapshots of the old and new theme on the GPU (see globals.css).
+    // Without View Transition support, or with reduced motion, switch instantly.
+    const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (typeof document.startViewTransition !== "function" || reduce) {
+      apply();
+      return;
+    }
+    document.startViewTransition(apply);
   }
 
   const label = theme === "dark" ? "Switch to light mode" : "Switch to dark mode";
@@ -42,7 +51,7 @@ export default function ThemeToggle() {
       data-burst=""
       aria-label={label}
       title={label}
-      className="group relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-moon/35 bg-card/60 text-accent backdrop-blur transition-[border-color,box-shadow] duration-500 hover:border-moon hover:shadow-[0_0_0_4px_color-mix(in_oklab,var(--color-moon)_12%,transparent)]"
+      className="group relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-moon/35 bg-card/85 text-accent transition-[border-color,box-shadow] duration-500 hover:border-moon hover:shadow-[0_0_0_4px_color-mix(in_oklab,var(--color-moon)_12%,transparent)]"
     >
       {/* Faint orbit ring */}
       <span aria-hidden="true" className="absolute inset-[3px] rounded-full border border-dashed border-moon/25 transition-transform duration-[1.2s] ease-out-expo group-hover:rotate-90" />

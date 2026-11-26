@@ -5,39 +5,25 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import Intro from "@/components/celestial/Intro";
 import SparkleTrail from "@/components/celestial/SparkleTrail";
+import PauseOffscreen from "@/components/celestial/PauseOffscreen";
 import StarBurst from "@/components/celestial/StarBurst";
 import Starfield from "@/components/celestial/Starfield";
 import BackToTop from "@/components/ui/BackToTop";
 import { profile } from "@/data/profile";
 import "./globals.css";
 
-// Fonts are self-hosted (src/fonts, SIL Open Font License, latin subset), so
-// builds never depend on reaching Google Fonts.
-// Cormorant Garamond: display headings (500, with italics for emphasis).
-// Cinzel: engraved capitals (labels, numerals, the hero motto).
-// Manrope: body, navigation and buttons.
-const cormorant = localFont({
+// Montserrat, self-hosted (src/fonts, SIL Open Font License, latin subset), so
+// builds never depend on reaching Google Fonts. One variable font (weights
+// 100–900, upright and italic) sets every role: headings, body and the small
+// engraved capitals (see the font tokens in globals.css).
+const montserrat = localFont({
   src: [
-    { path: "../fonts/cormorant-garamond-normal.woff2", weight: "400 600", style: "normal" },
-    { path: "../fonts/cormorant-garamond-italic.woff2", weight: "400 600", style: "italic" },
+    { path: "../fonts/montserrat-normal.woff2", weight: "100 900", style: "normal" },
+    { path: "../fonts/montserrat-italic.woff2", weight: "100 900", style: "italic" },
   ],
-  variable: "--font-cormorant",
-  display: "swap",
-  fallback: ["Georgia", "serif"],
-});
-const manrope = localFont({
-  src: "../fonts/manrope-normal.woff2",
-  weight: "200 800",
-  variable: "--font-manrope",
+  variable: "--font-montserrat",
   display: "swap",
   fallback: ["ui-sans-serif", "system-ui", "sans-serif"],
-});
-const cinzel = localFont({
-  src: "../fonts/cinzel-normal.woff2",
-  weight: "400 600",
-  variable: "--font-cinzel",
-  display: "swap",
-  fallback: ["Georgia", "serif"],
 });
 
 const siteUrl =
@@ -80,7 +66,7 @@ const themeScript = `try{var d=document.documentElement,t=localStorage.getItem("
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" data-theme="dark" suppressHydrationWarning className={`${cormorant.variable} ${manrope.variable} ${cinzel.variable}`}>
+    <html lang="en" data-theme="dark" suppressHydrationWarning className={montserrat.variable}>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
@@ -89,6 +75,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Providers>
           <SparkleTrail />
           <StarBurst />
+          <PauseOffscreen />
           {/* `isolate` keeps the fixed starfield behind content but above the page background. */}
           <div className="relative isolate">
             <Starfield />

@@ -53,7 +53,9 @@ function release<T extends SVGElement>(slots: Slot<T>[], keep: Set<string>, now:
  *  • gold dust nearby drifts a little out of the way.
  * Glows and lines are drawn on this full-screen overlay (not inside the
  * star layer), so they're never clipped at a layer edge. Everything fades
- * back when the pointer leaves. Mouse only — touch and pen are ignored —
+ * back when the pointer leaves. On touch screens there is no hover, so a
+ * tap on empty space (not on a link or button) wakes the stars around the
+ * finger for a moment instead. Off entirely with reduced motion —
  * and off entirely with reduced motion. One passive pointermove listener,
  * throttled to one update per frame; all changes are direct DOM writes.
  */
@@ -63,7 +65,12 @@ export default function SkyInteraction() {
   useEffect(() => {
     const root = svg.current;
     if (!root) return;
-    if (!matchMedia("(pointer: fine)").matches || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const mouse = matchMedia("(pointer: fine)").matches;
+    // A fingertip is less precise than a cursor and phone stars sit further
+    // apart, so a tap reaches a little wider.
+    const wakeR = mouse ? WAKE : WAKE * 1.5;
+    const linkR = mouse ? LINK : LINK * 1.4;
 
     const glows: Slot<SVGCircleElement>[] = Array.from(root.querySelectorAll<SVGCircleElement>(".sky-glow"), (el) => ({ el, key: null, last: null, freeAt: 0 }));
     const lines: Slot<SVGLineElement>[] = Array.from(root.querySelectorAll<SVGLineElement>(".sky-line"), (el) => ({ el, key: null, last: null, freeAt: 0 }));
@@ -94,7 +101,7 @@ export default function SkyInteraction() {
         const x = r.left + r.width / 2;
         const y = r.top + r.height / 2;
         const d = Math.hypot(x - px, y - py);
-        if (d < LINK) near.push({ i, el, x, y, d });
+        if (d < linkR) near.push({ i, el, x, y, d });
       });
       const dustNear: { el: HTMLElement; dx: number; dy: number; d: number }[] = [];
       for (const el of dust) {
@@ -111,7 +118,7 @@ export default function SkyInteraction() {
       const nextWoken = new Set<Element>();
       const glowKeys = new Set<string>();
       for (const p of near) {
-        if (p.d >= WAKE) break;
+        if (p.d >= wakeR) break;
         nextWoken.add(p.el);
         const key = String(p.i);
         const slot = acquire(glows, key, now);
@@ -119,7 +126,7 @@ export default function SkyInteraction() {
         glowKeys.add(key);
         slot.el.setAttribute("cx", p.x.toFixed(1));
         slot.el.setAttribute("cy", p.y.toFixed(1));
-        slot.el.style.opacity = (0.45 + 0.55 * (1 - p.d / WAKE)).toFixed(3);
+        slot.el.style.opacity = (0.45 + 0.55 * (1 - p.d / wakeR)).toFixed(3);
       }
       release(glows, glowKeys, now);
       woken.forEach((el) => !nextWoken.has(el) && el.removeAttribute("data-near"));
@@ -154,7 +161,7 @@ export default function SkyInteraction() {
         slot.el.setAttribute("x2", b.x.toFixed(1));
         slot.el.setAttribute("y2", b.y.toFixed(1));
         // Lines fade with the distance of their farther star from the pointer.
-        slot.el.style.opacity = (0.9 * Math.max(0, 1 - Math.max(a.d, b.d) / LINK)).toFixed(3);
+        slot.el.style.opacity = (0.9 * Math.max(0, 1 - Math.max(a.d, b.d) / linkR)).toFixed(3);
       }
       release(lines, lineKeys, now);
 
@@ -185,18 +192,35 @@ export default function SkyInteraction() {
       px = py = -1e4;
       schedule();
     };
+    // Only a mouse "leaves" the page: a lifted finger also fires pointerleave,
+    // which would otherwise put the tapped stars straight back to sleep.
+    const onPointerLeave = (e: PointerEvent) => e.pointerType === "mouse" && onLeave();
+    // Touch: a tap on empty space wakes the stars there, then they settle again.
+    let tapTimer = 0;
+    const onTap = (e: PointerEvent) => {
+      if (e.pointerType !== "touch") return;
+      if ((e.target as Element | null)?.closest?.("a, button, input, textarea, select, label, [role='button']")) return;
+      px = e.clientX;
+      py = e.clientY;
+      schedule();
+      window.clearTimeout(tapTimer);
+      tapTimer = window.setTimeout(onLeave, 1600);
+    };
     // The stars drift with scroll, so keep glows and lines on them while active.
     const onScroll = () => active && schedule();
 
-    window.addEventListener("pointermove", onMove, { passive: true });
-    document.documentElement.addEventListener("pointerleave", onLeave);
+    if (mouse) window.addEventListener("pointermove", onMove, { passive: true });
+    else window.addEventListener("pointerdown", onTap, { passive: true });
+    document.documentElement.addEventListener("pointerleave", onPointerLeave);
     window.addEventListener("blur", onLeave);
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", collect);
     return () => {
       cancelAnimationFrame(frame);
+      window.clearTimeout(tapTimer);
       window.removeEventListener("pointermove", onMove);
-      document.documentElement.removeEventListener("pointerleave", onLeave);
+      window.removeEventListener("pointerdown", onTap);
+      document.documentElement.removeEventListener("pointerleave", onPointerLeave);
       window.removeEventListener("blur", onLeave);
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", collect);

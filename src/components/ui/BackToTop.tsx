@@ -1,7 +1,8 @@
 "use client";
-import { AnimatePresence, animate, motion, useScroll, useSpring, type AnimationPlaybackControls } from "motion/react";
-import { useEffect, useRef, useState } from "react";
+import { AnimatePresence, motion, useScroll, useSpring } from "motion/react";
+import { useEffect, useState } from "react";
 import { ArrowUp } from "@/components/ui/Icons";
+import { glideTo } from "@/lib/glide";
 import { ease } from "@/lib/motion";
 import { useReducedMotionSafe } from "@/lib/use-reduced-motion";
 
@@ -25,39 +26,10 @@ export default function BackToTop() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const glide = useRef<AnimationPlaybackControls | null>(null);
-
-  // Stop the glide as soon as the visitor scrolls on their own.
-  useEffect(() => {
-    const stop = () => glide.current?.stop();
-    const opts = { passive: true } as const;
-    window.addEventListener("wheel", stop, opts);
-    window.addEventListener("touchstart", stop, opts);
-    window.addEventListener("keydown", stop);
-    return () => {
-      stop();
-      window.removeEventListener("wheel", stop);
-      window.removeEventListener("touchstart", stop);
-      window.removeEventListener("keydown", stop);
-    };
-  }, []);
-
   const toTop = () => {
     // Send keyboard / screen-reader focus back to the start of the content too.
     document.getElementById("main")?.focus({ preventScroll: true });
-    glide.current?.stop();
-    const from = window.scrollY;
-    if (reduce || from === 0) {
-      window.scrollTo({ top: 0, behavior: "instant" });
-      return;
-    }
-    // Driven here rather than by native smooth scrolling, so the pace is the
-    // same in every browser: longer pages take a little longer, capped at 1.1s.
-    glide.current = animate(from, 0, {
-      duration: Math.min(1.1, Math.max(0.55, from / 5000)),
-      ease,
-      onUpdate: (y) => window.scrollTo({ top: y, behavior: "instant" }),
-    });
+    glideTo(0, reduce);
   };
 
   return (
@@ -73,7 +45,7 @@ export default function BackToTop() {
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 16, scale: 0.85 }}
           transition={{ duration: reduce ? 0 : 0.45, ease }}
-          className="group fixed bottom-5 right-5 z-30 flex h-12 w-12 items-center justify-center rounded-full border border-moon/40 bg-card/80 text-accent shadow-[0_14px_34px_-14px_var(--shadow-deep)] backdrop-blur-md transition-[border-color,box-shadow] duration-300 hover:border-moon hover:shadow-[0_0_26px_-4px_var(--star-glow)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-moon sm:bottom-8 sm:right-8"
+          className="group fixed bottom-5 right-5 z-30 flex h-12 w-12 items-center justify-center rounded-full border border-moon/40 bg-card/90 text-accent shadow-[0_14px_34px_-14px_var(--shadow-deep)] transition-[border-color,box-shadow] duration-300 hover:border-moon hover:shadow-[0_0_26px_-4px_var(--star-glow)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-moon sm:bottom-8 sm:right-8"
         >
           {/* Scroll-progress ring */}
           <svg aria-hidden="true" viewBox="0 0 48 48" className="pointer-events-none absolute inset-0 -rotate-90">
